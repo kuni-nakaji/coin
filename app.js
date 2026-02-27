@@ -9,6 +9,12 @@ let currentDifficulty = 1;
 let correctStreak = 0;
 let weakModeOnly = false;
 
+// === クイズモード状態 ===
+let quizScore = 0;
+let quizStreak = 0;
+let quizDifficulty = 1; // 1=コインのみ, 2=全種類
+let currentQuizMoney = null;
+
 // === localStorage ===
 const STORAGE_KEY = 'coinGameData';
 
@@ -482,6 +488,136 @@ function checkAnswer() {
       message.textContent = 'おおすぎたよ！';
       detail.textContent = `${formatYen(total - target)} えん おおすぎたよ`;
     }
+  }
+}
+
+// === クイズモード ===
+function getQuizMoneyPool(difficulty) {
+  return difficulty === 1
+    ? MONEY_DATA.filter(m => m.type === 'coin')
+    : MONEY_DATA;
+}
+
+function weightedSelectMoney(pool) {
+  const data = loadStats();
+  const weights = pool.map(m => {
+    const stat = data.questionStats[m.value];
+    if (!stat || stat.attempts === 0) return 3; // 未挑戦: 中
+    const acc = stat.correct / stat.attempts;
+    if (acc < 0.4) return 6;  // 苦手: 高
+    if (acc < 0.8) return 3;  // 普通: 中
+    return 1;                  // 得意: 低
+  });
+  const total = weights.reduce((a, b) => a + b, 0);
+  let rand = Math.random() * total;
+  for (let i = 0; i < pool.length; i++) {
+    rand -= weights[i];
+    if (rand <= 0) return pool[i];
+  }
+  return pool[pool.length - 1];
+}
+
+function generateChoices(correctMoney, pool) {
+  const others = pool.filter(m => m.value !== correctMoney.value);
+  // poolが3枚未満の場合は全MONEY_DATAから補充
+  const fallback = MONEY_DATA.filter(m => m.value !== correctMoney.value);
+  const source = others.length >= 3 ? others : fallback;
+  const wrong = shuffleArray(source).slice(0, 3);
+  return shuffleArray([correctMoney, ...wrong]);
+}
+
+function startQuizMode() {
+  quizScore = 0;
+  quizStreak = 0;
+  quizDifficulty = 1;
+  document.getElementById('quiz-score').textContent = '0';
+  showScreen('quiz-screen');
+  nextQuizQuestion();
+}
+
+function nextQuizQuestion() {
+  document.getElementById('quiz-result-overlay').classList.remove('active');
+
+  const pool = getQuizMoneyPool(quizDifficulty);
+  currentQuizMoney = weightedSelectMoney(pool);
+  const choices = generateChoices(currentQuizMoney, pool);
+
+  // 貨幣を大きく表示
+  const displayEl = document.getElementById('quiz-coin-display');
+  displayEl.innerHTML = '';
+  const svgWrapper = document.createElement('div');
+  svgWrapper.classList.add('quiz-coin-svg');
+  if (currentQuizMoney.type === 'bill') svgWrapper.classList.add('quiz-bill-svg');
+  svgWrapper.innerHTML = currentQuizMoney.svg;
+  displayEl.appendChild(svgWrapper);
+
+  // 4択ボタン
+  const choicesEl = document.getElementById('quiz-choices');
+  choicesEl.innerHTML = '';
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.classList.add('quiz-choice-btn');
+    btn.textContent = formatYen(choice.value) + ' えん';
+    btn.dataset.value = String(choice.value);
+    btn.onclick = () => selectQuizAnswer(choice.value);
+    choicesEl.appendChild(btn);
+  });
+}
+
+function selectQuizAnswer(selectedValue) {
+  const isCorrect = selectedValue === currentQuizMoney.value;
+
+  // localStorage に記録
+  recordResult(currentQuizMoney.value, isCorrect);
+
+  // ボタンを無効化・正誤ハイライト
+  const choicesEl = document.getElementById('quiz-choices');
+  const btns = choicesEl.querySelectorAll('.quiz-choice-btn');
+  btns.forEach(btn => {
+    btn.disabled = true;
+    const btnValue = Number(btn.dataset.value);
+    if (btnValue === currentQuizMoney.value) {
+      btn.classList.add('correct-answer');
+    } else if (btnValue === selectedValue) {
+      btn.classList.add('wrong');
+    } else {
+      btn.classList.add('dimmed');
+    }
+  });
+
+  // スコア・連続正解・難易度
+  if (isCorrect) {
+    quizStreak++;
+    quizScore += 10;
+    document.getElementById('quiz-score').textContent = quizScore;
+    if (quizStreak >= 3 && quizDifficulty < 2) {
+      quizDifficulty = 2; // お札も追加
+    }
+    launchConfetti();
+  } else {
+    quizStreak = 0;
+  }
+
+  // 結果オーバーレイ表示
+  const overlay = document.getElementById('quiz-result-overlay');
+  const card = document.getElementById('quiz-result-card');
+  const emoji = document.getElementById('quiz-result-emoji');
+  const message = document.getElementById('quiz-result-message');
+  const detail = document.getElementById('quiz-result-detail');
+
+  overlay.classList.add('active');
+
+  if (isCorrect) {
+    card.className = 'result-card correct';
+    const reactions = ['🎉', '⭐', '🌟', '🏆', '✨'];
+    emoji.textContent = reactions[Math.floor(Math.random() * reactions.length)];
+    message.textContent = 'せいかい！すごい！';
+    detail.textContent = formatYen(currentQuizMoney.value) + ' えん、だいせいかい！';
+  } else {
+    card.className = 'result-card wrong';
+    emoji.textContent = '🤔';
+    message.textContent = 'ちがうよ！';
+    detail.textContent = 'これは ' + formatYen(currentQuizMoney.value) + ' えんだよ';
   }
 }
 

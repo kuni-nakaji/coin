@@ -894,6 +894,132 @@ body {
   text-align: center;
 }
 
+/* ===== これはいくら？クイズモード ===== */
+.btn-quiz {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.8rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  letter-spacing: 0.05em;
+  font-family: inherit;
+  background: linear-gradient(135deg, #29B6F6, #0288D1);
+  color: white;
+}
+
+.btn-quiz:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(2,136,209,0.5);
+}
+
+.btn-quiz:active {
+  transform: translateY(0);
+}
+
+.quiz-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1rem;
+  gap: 1.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.quiz-question-text {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  text-align: center;
+}
+
+.quiz-coin-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  min-width: 220px;
+  min-height: 220px;
+}
+
+.quiz-coin-svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 160px;
+}
+
+.quiz-coin-svg svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* お札は横長なので幅を広げる */
+.quiz-bill-svg {
+  width: 240px;
+  height: 120px;
+}
+
+.quiz-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+.quiz-choice-btn {
+  padding: 1.2rem 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 900;
+  border: 3px solid #e0e0e0;
+  border-radius: var(--radius-sm);
+  background: white;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+  transition: all 0.18s ease;
+  box-shadow: var(--shadow-sm);
+  letter-spacing: 0.03em;
+}
+
+.quiz-choice-btn:hover:not(:disabled) {
+  border-color: #29B6F6;
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(2,136,209,0.3);
+}
+
+.quiz-choice-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.quiz-choice-btn.correct-answer {
+  background: #E8F5E9;
+  border-color: var(--success);
+  color: #1B5E20;
+  box-shadow: 0 4px 16px rgba(76,175,80,0.4);
+}
+
+.quiz-choice-btn.wrong {
+  background: #FFEBEE;
+  border-color: var(--danger);
+  color: #B71C1C;
+}
+
+.quiz-choice-btn.dimmed {
+  opacity: 0.35;
+}
+
 /* ===== レスポンシブ ===== */
 @media (max-width: 480px) {
   .title-text {

@@ -1020,6 +1020,53 @@ body {
   opacity: 0.35;
 }
 
+/* ===== クイズ コンボ表示 ===== */
+.quiz-coin-display.quiz-combo-mode {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1.2rem 1rem;
+  min-height: auto;
+  max-width: 360px;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-combo-coin {
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quiz-combo-coin svg,
+.quiz-combo-bill svg {
+  width: 100%;
+  height: 100%;
+}
+
+.quiz-combo-bill {
+  width: 140px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quiz-combo-plus {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #bbb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0 0.1rem;
+}
+
 /* ===== レスポンシブ ===== */
 @media (max-width: 480px) {
   .title-text {

@@ -14,6 +14,8 @@ let quizScore = 0;
 let quizStreak = 0;
 let quizDifficulty = 1; // 1=コインのみ, 2=全種類
 let currentQuizMoney = null;
+let currentQuizCorrectAnswer = null; // 正解金額（単体・組み合わせ共通）
+let currentQuizIsCombo = false;      // true=複数枚出題モード
 
 // === localStorage ===
 const STORAGE_KEY = 'coinGameData';
@@ -539,36 +541,138 @@ function nextQuizQuestion() {
   document.getElementById('quiz-result-overlay').classList.remove('active');
 
   const pool = getQuizMoneyPool(quizDifficulty);
-  currentQuizMoney = weightedSelectMoney(pool);
-  const choices = generateChoices(currentQuizMoney, pool);
 
-  // 貨幣を大きく表示
+  // 50% の確率でコンボ出題（最初の1問は必ず単体）
+  if (quizScore > 0 && Math.random() < 0.5) {
+    showCombinationQuiz(pool);
+  } else {
+    showSingleMoneyQuiz(pool);
+  }
+}
+
+// 単体コイン／お札を出題
+function showSingleMoneyQuiz(pool) {
+  currentQuizIsCombo = false;
+  currentQuizMoney = weightedSelectMoney(pool);
+  currentQuizCorrectAnswer = currentQuizMoney.value;
+
   const displayEl = document.getElementById('quiz-coin-display');
   displayEl.innerHTML = '';
+  displayEl.className = 'quiz-coin-display'; // combo クラスをリセット
+
   const svgWrapper = document.createElement('div');
   svgWrapper.classList.add('quiz-coin-svg');
   if (currentQuizMoney.type === 'bill') svgWrapper.classList.add('quiz-bill-svg');
   svgWrapper.innerHTML = currentQuizMoney.svg;
   displayEl.appendChild(svgWrapper);
 
-  // 4択ボタン
+  const choices = generateChoices(currentQuizMoney, pool);
+  renderQuizChoices(choices.map(m => m.value));
+}
+
+// 複数枚の組み合わせを出題
+function showCombinationQuiz(pool) {
+  currentQuizIsCombo = true;
+  currentQuizMoney = null;
+
+  const combo = generateCombination(pool);
+  currentQuizCorrectAnswer = combo.total;
+
+  const displayEl = document.getElementById('quiz-coin-display');
+  displayEl.innerHTML = '';
+  displayEl.className = 'quiz-coin-display quiz-combo-mode';
+
+  combo.items.forEach((money, i) => {
+    if (i > 0) {
+      const plus = document.createElement('div');
+      plus.classList.add('quiz-combo-plus');
+      plus.textContent = '+';
+      displayEl.appendChild(plus);
+    }
+    const svgWrapper = document.createElement('div');
+    svgWrapper.classList.add('quiz-combo-coin');
+    if (money.type === 'bill') svgWrapper.classList.add('quiz-combo-bill');
+    svgWrapper.innerHTML = money.svg;
+    displayEl.appendChild(svgWrapper);
+  });
+
+  const choiceValues = generateCombinationChoices(combo.total, pool);
+  renderQuizChoices(choiceValues);
+}
+
+// 組み合わせを生成（2〜3枚、合計が maxTotal 以下）
+function generateCombination(pool) {
+  const maxTotal = quizDifficulty === 1 ? 300 : 3000;
+  const numPicks = 2 + Math.floor(Math.random() * 2); // 2 or 3
+  const shuffled = shuffleArray([...pool]);
+
+  const items = [];
+  let total = 0;
+  for (let i = 0; i < shuffled.length && items.length < numPicks; i++) {
+    const money = shuffled[i];
+    if (total + money.value <= maxTotal) {
+      items.push(money);
+      total += money.value;
+    }
+  }
+
+  // フォールバック: 最低2枚保証
+  if (items.length < 2) {
+    const sorted = [...pool].sort((a, b) => a.value - b.value);
+    const a = sorted[0];
+    const b = sorted[Math.min(1, sorted.length - 1)];
+    return { items: [a, b], total: a.value + b.value };
+  }
+  return { items, total };
+}
+
+// コンボ用 4択（合計金額を ±1 枚ずらした値を生成）
+function generateCombinationChoices(correctTotal, pool) {
+  const denoms = pool.map(m => m.value);
+  const wrongSet = new Set();
+
+  for (let attempt = 0; attempt < 60 && wrongSet.size < 3; attempt++) {
+    const denom = denoms[Math.floor(Math.random() * denoms.length)];
+    const sign = Math.random() < 0.5 ? 1 : -1;
+    const wrong = correctTotal + sign * denom;
+    if (wrong > 0 && wrong !== correctTotal) wrongSet.add(wrong);
+  }
+
+  // フォールバック
+  let mult = 1;
+  const base = denoms[0];
+  while (wrongSet.size < 3) {
+    const a = correctTotal + mult * base;
+    const b = correctTotal - mult * base;
+    if (a !== correctTotal) wrongSet.add(a);
+    if (wrongSet.size < 3 && b > 0 && b !== correctTotal) wrongSet.add(b);
+    mult++;
+  }
+
+  return shuffleArray([correctTotal, ...[...wrongSet].slice(0, 3)]);
+}
+
+// 4択ボタンを描画
+function renderQuizChoices(choiceValues) {
   const choicesEl = document.getElementById('quiz-choices');
   choicesEl.innerHTML = '';
-  choices.forEach(choice => {
+  choiceValues.forEach(value => {
     const btn = document.createElement('button');
     btn.classList.add('quiz-choice-btn');
-    btn.textContent = formatYen(choice.value) + ' えん';
-    btn.dataset.value = String(choice.value);
-    btn.onclick = () => selectQuizAnswer(choice.value);
+    btn.textContent = formatYen(value) + ' えん';
+    btn.dataset.value = String(value);
+    btn.onclick = () => selectQuizAnswer(value);
     choicesEl.appendChild(btn);
   });
 }
 
 function selectQuizAnswer(selectedValue) {
-  const isCorrect = selectedValue === currentQuizMoney.value;
+  const isCorrect = selectedValue === currentQuizCorrectAnswer;
 
-  // localStorage に記録
-  recordResult(currentQuizMoney.value, isCorrect);
+  // 単体コインのみ stats 記録
+  if (!currentQuizIsCombo && currentQuizMoney) {
+    recordResult(currentQuizMoney.value, isCorrect);
+  }
 
   // ボタンを無効化・正誤ハイライト
   const choicesEl = document.getElementById('quiz-choices');
@@ -576,7 +680,7 @@ function selectQuizAnswer(selectedValue) {
   btns.forEach(btn => {
     btn.disabled = true;
     const btnValue = Number(btn.dataset.value);
-    if (btnValue === currentQuizMoney.value) {
+    if (btnValue === currentQuizCorrectAnswer) {
       btn.classList.add('correct-answer');
     } else if (btnValue === selectedValue) {
       btn.classList.add('wrong');
@@ -612,12 +716,12 @@ function selectQuizAnswer(selectedValue) {
     const reactions = ['🎉', '⭐', '🌟', '🏆', '✨'];
     emoji.textContent = reactions[Math.floor(Math.random() * reactions.length)];
     message.textContent = 'せいかい！すごい！';
-    detail.textContent = formatYen(currentQuizMoney.value) + ' えん、だいせいかい！';
+    detail.textContent = 'ぜんぶで ' + formatYen(currentQuizCorrectAnswer) + ' えん！';
   } else {
     card.className = 'result-card wrong';
     emoji.textContent = '🤔';
-    message.textContent = 'ちがうよ！';
-    detail.textContent = 'これは ' + formatYen(currentQuizMoney.value) + ' えんだよ';
+    message.textContent = currentQuizIsCombo ? 'ちがうよ！' : 'ちがうよ！';
+    detail.textContent = 'ぜんぶで ' + formatYen(currentQuizCorrectAnswer) + ' えんだよ';
   }
 }
 

@@ -558,28 +558,6 @@ body {
   font-style: italic;
 }
 
-.tray-total {
-  display: flex;
-  align-items: baseline;
-  gap: 0.3rem;
-  margin-top: 0.8rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid #f0f0f0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-light);
-}
-
-.tray-total-amount {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: var(--text);
-}
-
-.tray-total-amount.pop {
-  animation: popAnim 0.25s ease;
-}
-
 /* ゲームアクション */
 .game-actions {
   display: flex;

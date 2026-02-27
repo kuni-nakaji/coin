@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>おかねをかぞえよう！</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- タイトル画面 -->
+    <div id="title-screen" class="screen active">
+      <div class="title-bg">
+        <div class="floating-coins"></div>
+      </div>
+      <div class="title-content">
+        <h1 class="title-text">おかねを<br>かぞえよう！</h1>
+        <p class="subtitle">にほんのおかねをおぼえよう</p>
+        <div class="title-buttons">
+          <button class="btn-primary" onclick="startLearnMode()">
+            <span class="btn-icon">📚</span>
+            まなぶ
+          </button>
+          <button class="btn-success" onclick="startGameMode(false)">
+            <span class="btn-icon">🎮</span>
+            ゲームをする
+          </button>
+          <button class="btn-stats" onclick="startStatsMode()">
+            <span class="btn-icon">📊</span>
+            きろく
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 学習モード -->
+    <div id="learn-screen" class="screen">
+      <div class="screen-header">
+        <button class="btn-back" onclick="goHome()">◀ もどる</button>
+        <h2>おかねをまなぼう</h2>
+      </div>
+
+      <div class="money-gallery">
+        <h3 class="section-title">コイン</h3>
+        <div class="money-grid" id="coin-gallery"></div>
+        <h3 class="section-title">おさつ</h3>
+        <div class="money-grid" id="bill-gallery"></div>
+      </div>
+
+      <div class="learn-game-area">
+        <h3 class="section-title">ためしてみよう！</h3>
+        <p class="instruction">したのおかねをおしてみよう。ぜんぶあわせてなんえん？</p>
+        <div class="money-selector" id="learn-selector"></div>
+        <div class="total-display">
+          <div class="total-label">ぜんぶで</div>
+          <div class="total-amount" id="learn-total">0</div>
+          <div class="total-unit">えん</div>
+        </div>
+        <div class="selected-coins" id="learn-selected"></div>
+        <button class="btn-reset" onclick="resetLearn()">リセット</button>
+      </div>
+    </div>
+
+    <!-- ゲームモード -->
+    <div id="game-screen" class="screen">
+      <div class="screen-header">
+        <button class="btn-back" onclick="goHome()">◀ もどる</button>
+        <h2>おかねゲーム</h2>
+        <div id="weak-badge" class="weak-badge" style="display:none">にがて練習中</div>
+        <div class="score-display">
+          <span class="score-label">スコア</span>
+          <span class="score-value" id="score">0</span>
+        </div>
+      </div>
+
+      <div class="game-area">
+        <div class="question-card">
+          <div class="question-text" id="question-text">ローディング...</div>
+          <div class="target-amount" id="target-amount">0<span>えん</span></div>
+        </div>
+
+        <div class="game-tray">
+          <div class="tray-label">えらんだおかね</div>
+          <div class="tray-content" id="tray-content"></div>
+          <div class="tray-total">
+            <span>ごうけい：</span>
+            <span class="tray-total-amount" id="tray-total">0</span>
+            <span>えん</span>
+          </div>
+        </div>
+
+        <div class="game-actions">
+          <button class="btn-check" onclick="checkAnswer()" id="check-btn">こたえる！</button>
+          <button class="btn-reset" onclick="resetGame()">やりなおす</button>
+        </div>
+
+        <div class="money-selector" id="game-selector"></div>
+      </div>
+
+      <!-- 結果オーバーレイ -->
+      <div class="result-overlay" id="result-overlay">
+        <div class="result-card" id="result-card">
+          <div class="result-emoji" id="result-emoji"></div>
+          <div class="result-message" id="result-message"></div>
+          <div class="result-detail" id="result-detail"></div>
+          <button class="btn-next" onclick="nextQuestion()">つぎへ ▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- きろく画面 -->
+    <div id="stats-screen" class="screen">
+      <div class="screen-header">
+        <button class="btn-back" onclick="goHome()">◀ もどる</button>
+        <h2>きろく</h2>
+        <button class="btn-weak-practice" onclick="startGameMode(true)">にがてを練習</button>
+      </div>
+
+      <div class="stats-area">
+        <div class="stats-legend">
+          <span class="legend-item level-great">⭐⭐⭐ よくわかる</span>
+          <span class="legend-item level-good">⭐⭐ わかってきた</span>
+          <span class="legend-item level-practice">⭐ れんしゅうしよう</span>
+          <span class="legend-item level-new">❓ まだ</span>
+        </div>
+        <div class="stats-grid" id="stats-grid"></div>
+
+        <h3 class="section-title" style="margin-top:1.5rem">さいきんのきろく</h3>
+        <div class="history-list" id="history-list"></div>
+      </div>
+    </div>
+
+  <script src="money.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

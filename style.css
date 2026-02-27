@@ -433,10 +433,16 @@ body {
 }
 
 .count-badge {
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: var(--text-light);
-  margin-top: 2px;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: white;
+  background: var(--primary);
+  border-radius: 50px;
+  padding: 0.1rem 0.7rem;
+  margin-top: 4px;
+  min-width: 2.4rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(255,107,53,0.4);
 }
 
 .remove-btn {
@@ -550,28 +556,6 @@ body {
   font-size: 0.95rem;
   padding: 0.5rem;
   font-style: italic;
-}
-
-.tray-total {
-  display: flex;
-  align-items: baseline;
-  gap: 0.3rem;
-  margin-top: 0.8rem;
-  padding-top: 0.8rem;
-  border-top: 1px solid #f0f0f0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-light);
-}
-
-.tray-total-amount {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: var(--text);
-}
-
-.tray-total-amount.pop {
-  animation: popAnim 0.25s ease;
 }
 
 /* ゲームアクション */

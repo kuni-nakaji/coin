@@ -360,7 +360,6 @@ function addGameMoney(value) {
   gameSelected[value] = (gameSelected[value] || 0) + 1;
   renderTray();
   updateTrayTotal();
-  animatePop(document.getElementById('tray-total'));
 }
 
 function renderTray() {
@@ -436,7 +435,6 @@ function updateTrayTotal() {
   for (const [v, c] of Object.entries(gameSelected)) {
     total += Number(v) * c;
   }
-  document.getElementById('tray-total').textContent = formatYen(total);
   return total;
 }
 

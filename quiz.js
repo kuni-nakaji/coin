@@ -43,28 +43,44 @@ function generateCombinationChoices(correctTotal, pool) {
   return shuffleArray([correctTotal, ...[...wrongSet].slice(0, 3)]);
 }
 
-// 組み合わせを生成（2〜3枚、合計が maxTotal 以下）
+// 組み合わせを生成: 1〜3種、同一種は最大3枚、合計4枚まで
+// 戻り値: { items: [money, ...], total }  ※同じ種が複数の場合は繰り返して格納
 function generateCombination(pool) {
   const maxTotal = quizDifficulty === 1 ? 300 : 3000;
-  const numPicks = 2 + Math.floor(Math.random() * 2);
-  const shuffled = shuffleArray([...pool]);
+  const maxItems = 4; // 個別表示するので最大4枚
+  const numGroups = 1 + Math.floor(Math.random() * 3); // 1, 2, or 3 denominations
 
-  const items = [];
+  const groups = [];
+  const usedValues = new Set();
   let total = 0;
-  for (let i = 0; i < shuffled.length && items.length < numPicks; i++) {
-    const money = shuffled[i];
-    if (total + money.value <= maxTotal) {
-      items.push(money);
-      total += money.value;
-    }
+  let totalCount = 0;
+
+  for (let attempt = 0; attempt < 100 && groups.length < numGroups && totalCount < maxItems; attempt++) {
+    const money = pool[Math.floor(Math.random() * pool.length)];
+    if (usedValues.has(money.value)) continue;
+
+    const remaining = maxItems - totalCount;
+    const maxCount = Math.min(3, remaining, Math.floor((maxTotal - total) / money.value));
+    // 1グループだけになる場合は必ず2枚以上にする
+    const minCount = (numGroups === 1 && groups.length === 0) ? 2 : 1;
+    if (maxCount < minCount) continue;
+
+    const count = minCount + Math.floor(Math.random() * (maxCount - minCount + 1));
+    groups.push({ money, count });
+    usedValues.add(money.value);
+    total += money.value * count;
+    totalCount += count;
   }
 
-  if (items.length < 2) {
+  // フォールバック: 合計2枚以上を保証
+  if (groups.length === 0 || totalCount < 2) {
     const sorted = [...pool].sort((a, b) => a.value - b.value);
-    const a = sorted[0];
-    const b = sorted[Math.min(1, sorted.length - 1)];
-    return { items: [a, b], total: a.value + b.value };
+    const m = sorted[0];
+    return { items: [m, m], total: m.value * 2 };
   }
+
+  // groups を個別 items に展開
+  const items = groups.flatMap(g => Array(g.count).fill(g.money));
   return { items, total };
 }
 
@@ -123,7 +139,7 @@ function showSingleMoneyQuiz(pool) {
   renderQuizChoices(generateChoices(currentQuizMoney, pool).map(m => m.value));
 }
 
-// 複数枚の組み合わせを出題
+// 複数枚の組み合わせを出題（1枚ずつ個別表示）
 function showCombinationQuiz(pool) {
   currentQuizIsCombo = true;
   currentQuizMoney = null;
@@ -143,8 +159,7 @@ function showCombinationQuiz(pool) {
       displayEl.appendChild(plus);
     }
     const svgWrapper = document.createElement('div');
-    svgWrapper.classList.add('quiz-combo-coin');
-    if (money.type === 'bill') svgWrapper.classList.add('quiz-combo-bill');
+    svgWrapper.classList.add(money.type === 'bill' ? 'quiz-combo-bill' : 'quiz-combo-coin');
     svgWrapper.innerHTML = money.svg;
     displayEl.appendChild(svgWrapper);
   });

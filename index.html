@@ -122,6 +122,11 @@
         <div class="quiz-question-text">これはいくらでしょう？</div>
         <div class="quiz-coin-display" id="quiz-coin-display"></div>
         <div class="quiz-choices" id="quiz-choices"></div>
+        <div class="quiz-earnings-bar">
+          <span class="quiz-earnings-label">ためたおかね</span>
+          <span class="quiz-earnings-amount" id="quiz-earnings">0</span>
+          <span class="quiz-earnings-unit">えん</span>
+        </div>
       </div>
 
       <!-- クイズ結果オーバーレイ -->
@@ -130,6 +135,7 @@
           <div class="result-emoji" id="quiz-result-emoji"></div>
           <div class="result-message" id="quiz-result-message"></div>
           <div class="result-detail" id="quiz-result-detail"></div>
+          <div class="quiz-milestone" id="quiz-milestone"></div>
           <button class="btn-next" onclick="nextQuizQuestion()">つぎへ ▶</button>
         </div>
       </div>

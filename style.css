@@ -1051,6 +1051,60 @@ body {
   padding: 0;
 }
 
+/* ===== クイズ 累積獲得金額 ===== */
+.quiz-earnings-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1.2rem;
+  padding: 0.7rem 1.4rem;
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.quiz-earnings-label {
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.quiz-earnings-amount {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.quiz-earnings-unit {
+  font-size: 1rem;
+  color: var(--text-light);
+}
+
+/* ===== クイズ マイルストーン ===== */
+.quiz-milestone {
+  display: none;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #c0392b;
+  background: linear-gradient(135deg, #fff9e6, #fff3cd);
+  border: 2px solid #f6c90e;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1rem;
+  margin-top: 0.6rem;
+  text-align: center;
+}
+
+.quiz-milestone.active {
+  display: block;
+  animation: milestoneIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes milestoneIn {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
 /* ===== レスポンシブ ===== */
 @media (max-width: 480px) {
   .title-text {

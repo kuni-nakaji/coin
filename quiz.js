@@ -106,7 +106,6 @@ function startQuizMode() {
   quizEarnings = 0;
   document.getElementById('quiz-score').textContent = '0';
   document.getElementById('quiz-earnings').textContent = '0';
-  document.getElementById('quiz-score').textContent = '0';
   showScreen('quiz-screen');
   nextQuizQuestion();
 }
@@ -194,7 +193,6 @@ function selectQuizAnswer(selectedValue) {
   milestoneEl.className = 'quiz-milestone';
   milestoneEl.textContent = '';
 
-  // スコア・連続正解・難易度
   if (isCorrect) {
     quizStreak++;
     quizScore += 10;
@@ -217,7 +215,6 @@ function selectQuizAnswer(selectedValue) {
       setTimeout(launchConfetti, 300);
       setTimeout(launchConfetti, 700);
     }
-    launchConfetti();
   } else {
     quizStreak = 0;
   }
@@ -237,7 +234,6 @@ function selectQuizAnswer(selectedValue) {
     emoji.textContent   = reactions[Math.floor(Math.random() * reactions.length)];
     message.textContent = 'せいかい！すごい！';
     detail.textContent  = '+' + formatYen(currentQuizCorrectAnswer) + ' えん かくとく！';
-    detail.textContent  = 'ぜんぶで ' + formatYen(currentQuizCorrectAnswer) + ' えん！';
   } else {
     card.className = 'result-card wrong';
     emoji.textContent   = '🤔';

@@ -261,11 +261,13 @@ const QUESTIONS = [
   { target: 600, hint: '500えんと100えん', difficulty: 3 },
   { target: 300, hint: '100えんを3まい', difficulty: 3 },
   { target: 250, hint: '100えんが2まいと50えん', difficulty: 3 },
-  // チャレンジ（1000円まで）
+  // チャレンジ（お札の組み合わせ）
   { target: 1000, hint: '1000えんさつを1まい', difficulty: 4 },
   { target: 1100, hint: '1000えんと100えん', difficulty: 4 },
   { target: 1500, hint: '1000えんと500えん', difficulty: 4 },
   { target: 2000, hint: '1000えんさつを2まい', difficulty: 4 },
+  { target: 5000, hint: '5000えんさつを1まい', difficulty: 4 },
+  { target: 10000, hint: '10000えんさつを1まい', difficulty: 4 },
 ];
 
 function getMoneySVG(moneyItem) {

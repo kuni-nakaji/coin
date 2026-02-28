@@ -123,6 +123,25 @@ function nextQuizQuestion() {
   }
 }
 
+// 特定のコイン／お札を強制出題（履歴からの復習用）
+function showForcedCoinQuiz(money) {
+  currentQuizIsCombo = false;
+  currentQuizMoney = money;
+  currentQuizCorrectAnswer = money.value;
+
+  const displayEl = document.getElementById('quiz-coin-display');
+  displayEl.innerHTML = '';
+  displayEl.className = 'quiz-coin-display';
+
+  const svgWrapper = document.createElement('div');
+  svgWrapper.classList.add('quiz-coin-svg');
+  if (money.type === 'bill') svgWrapper.classList.add('quiz-bill-svg');
+  svgWrapper.innerHTML = money.svg;
+  displayEl.appendChild(svgWrapper);
+
+  renderQuizChoices(generateChoices(money, MONEY_DATA).map(m => m.value));
+}
+
 // 単体コイン／お札を出題
 function showSingleMoneyQuiz(pool) {
   currentQuizIsCombo = false;

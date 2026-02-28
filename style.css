@@ -878,6 +878,32 @@ body {
   text-align: center;
 }
 
+.history-item-review {
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.history-item-review:hover {
+  background: #ffe0cc;
+  transform: translateX(2px);
+}
+
+.history-item-review:active {
+  transform: scale(0.98);
+}
+
+.history-review-btn {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--primary);
+  background: #fff3ee;
+  border: 1.5px solid var(--primary-light);
+  border-radius: 20px;
+  padding: 0.15rem 0.6rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 /* ===== これはいくら？クイズモード ===== */
 .btn-quiz {
   display: flex;

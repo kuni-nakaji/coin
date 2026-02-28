@@ -5,6 +5,7 @@ let quizDifficulty = 1;        // 1=コインのみ, 2=全種類
 let currentQuizMoney = null;
 let currentQuizCorrectAnswer = null; // 正解金額（単体・組み合わせ共通）
 let currentQuizIsCombo = false;      // true=複数枚出題モード
+let quizEarnings = 0;                // 正解時に累積する獲得金額
 
 function getQuizMoneyPool(difficulty) {
   return difficulty === 1 ? MONEY_DATA.filter(m => m.type === 'coin') : MONEY_DATA;
@@ -102,7 +103,9 @@ function startQuizMode() {
   quizScore = 0;
   quizStreak = 0;
   quizDifficulty = 1;
+  quizEarnings = 0;
   document.getElementById('quiz-score').textContent = '0';
+  document.getElementById('quiz-earnings').textContent = '0';
   showScreen('quiz-screen');
   nextQuizQuestion();
 }
@@ -185,13 +188,33 @@ function selectQuizAnswer(selectedValue) {
     else                                 btn.classList.add('dimmed');
   });
 
-  // スコア・連続正解・難易度
+  // スコア・連続正解・難易度・獲得金額
+  const milestoneEl = document.getElementById('quiz-milestone');
+  milestoneEl.className = 'quiz-milestone';
+  milestoneEl.textContent = '';
+
   if (isCorrect) {
     quizStreak++;
     quizScore += 10;
     document.getElementById('quiz-score').textContent = quizScore;
     if (quizStreak >= 3 && quizDifficulty < 2) quizDifficulty = 2;
+
+    // 獲得金額を累積
+    const prevMilestone = Math.floor(quizEarnings / 10000);
+    quizEarnings += currentQuizCorrectAnswer;
+    const newMilestone = Math.floor(quizEarnings / 10000);
+    animatePop(document.getElementById('quiz-earnings'));
+    document.getElementById('quiz-earnings').textContent = formatYen(quizEarnings);
+
     launchConfetti();
+
+    // 1万円ごとにお祝い
+    if (newMilestone > prevMilestone) {
+      milestoneEl.textContent = '🎊 ' + formatYen(newMilestone * 10000) + 'えん たまったよ！';
+      milestoneEl.classList.add('active');
+      setTimeout(launchConfetti, 300);
+      setTimeout(launchConfetti, 700);
+    }
   } else {
     quizStreak = 0;
   }
@@ -210,7 +233,7 @@ function selectQuizAnswer(selectedValue) {
     const reactions = ['🎉', '⭐', '🌟', '🏆', '✨'];
     emoji.textContent   = reactions[Math.floor(Math.random() * reactions.length)];
     message.textContent = 'せいかい！すごい！';
-    detail.textContent  = 'ぜんぶで ' + formatYen(currentQuizCorrectAnswer) + ' えん！';
+    detail.textContent  = '+' + formatYen(currentQuizCorrectAnswer) + ' えん かくとく！';
   } else {
     card.className = 'result-card wrong';
     emoji.textContent   = '🤔';

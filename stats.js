@@ -92,6 +92,17 @@ function renderStatsScreen() {
     time.textContent = formatTime(h.timestamp);
 
     item.append(icon, text, time);
+
+    // 不正解アイテムにタップで復習ボタンを追加
+    if (!h.correct) {
+      item.classList.add('history-item-review');
+      const reviewBtn = document.createElement('span');
+      reviewBtn.classList.add('history-review-btn');
+      reviewBtn.textContent = '復習 ▶';
+      item.appendChild(reviewBtn);
+      item.onclick = () => reviewFromHistory(h.target);
+    }
+
     historyEl.appendChild(item);
   });
 }
@@ -103,4 +114,43 @@ function formatTime(ts) {
   const diffH = Math.floor(diffMin / 60);
   if (diffH < 24)   return diffH + 'じかんまえ';
   return Math.floor(diffH / 24) + 'にちまえ';
+}
+
+// 履歴アイテムをタップして同じパターンを復習
+function reviewFromHistory(target) {
+  const money = MONEY_DATA.find(m => m.value === target);
+
+  if (money) {
+    // コイン/お札 → クイズモードで特定の貨幣を出題
+    quizScore = 0;
+    quizStreak = 0;
+    quizDifficulty = 1;
+    quizEarnings = 0;
+    document.getElementById('quiz-result-overlay').classList.remove('active');
+    document.getElementById('quiz-score').textContent = '0';
+    document.getElementById('quiz-earnings').textContent = '0';
+    showScreen('quiz-screen');
+    showForcedCoinQuiz(money);
+  } else {
+    // ゲーム問題の金額 → ゲームモードで特定の問題を出題
+    const question = QUESTIONS.find(q => q.target === target);
+    if (!question) return;
+
+    weakModeOnly = false;
+    score = 0;
+    correctStreak = 0;
+    currentDifficulty = question.difficulty;
+    document.getElementById('score').textContent = '0';
+    document.getElementById('weak-badge').style.display = 'none';
+    gameSelected = {};
+    showScreen('game-screen');
+    renderGameSelector();
+
+    // 特定の問題を強制セット
+    currentQuestion = question;
+    document.getElementById('question-text').textContent = 'ぴったり　つくってみよう！';
+    document.getElementById('target-amount').innerHTML =
+      formatYen(target) + '<span>えん</span>';
+    renderTray();
+  }
 }

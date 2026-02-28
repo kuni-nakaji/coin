@@ -100,7 +100,7 @@ function renderStatsScreen() {
       reviewBtn.classList.add('history-review-btn');
       reviewBtn.textContent = '復習 ▶';
       item.appendChild(reviewBtn);
-      item.onclick = () => reviewFromHistory(h.target);
+      item.onclick = () => reviewFromHistory(h);
     }
 
     historyEl.appendChild(item);
@@ -117,7 +117,22 @@ function formatTime(ts) {
 }
 
 // 履歴アイテムをタップして同じパターンを復習
-function reviewFromHistory(target) {
+function reviewFromHistory(h) {
+  const target = typeof h === 'object' ? h.target : h;
+
+  // コンボ問題の復習
+  if (h.isCombo && h.comboItems) {
+    quizScore = 0;
+    quizStreak = 0;
+    quizDifficulty = 1;
+    initQuizEarnings();
+    document.getElementById('quiz-result-overlay').classList.remove('active');
+    document.getElementById('quiz-score').textContent = '0';
+    showScreen('quiz-screen');
+    showForcedComboQuiz(h.comboItems, h.target);
+    return;
+  }
+
   const money = MONEY_DATA.find(m => m.value === target);
 
   if (money) {
@@ -125,10 +140,9 @@ function reviewFromHistory(target) {
     quizScore = 0;
     quizStreak = 0;
     quizDifficulty = 1;
-    quizEarnings = 0;
+    initQuizEarnings();
     document.getElementById('quiz-result-overlay').classList.remove('active');
     document.getElementById('quiz-score').textContent = '0';
-    document.getElementById('quiz-earnings').textContent = '0';
     showScreen('quiz-screen');
     showForcedCoinQuiz(money);
   } else {

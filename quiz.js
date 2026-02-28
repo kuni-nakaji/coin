@@ -5,6 +5,7 @@ let quizDifficulty = 1;        // 1=コインのみ, 2=全種類
 let currentQuizMoney = null;
 let currentQuizCorrectAnswer = null; // 正解金額（単体・組み合わせ共通）
 let currentQuizIsCombo = false;      // true=複数枚出題モード
+let currentComboItems = null;        // コンボ出題時の個別コイン配列
 let quizEarnings = 0;                // 正解時に累積する獲得金額
 
 function getQuizMoneyPool(difficulty) {
@@ -99,13 +100,24 @@ function renderQuizChoices(choiceValues) {
   });
 }
 
+// 獲得金額を復元（1時間以内なら継続、それ以降はリセット）
+function initQuizEarnings() {
+  const saved = loadEarnings();
+  if (Date.now() - saved.lastUpdate > 3_600_000) {
+    quizEarnings = 0;
+    clearEarnings();
+  } else {
+    quizEarnings = saved.earnings;
+  }
+  document.getElementById('quiz-earnings').textContent = formatYen(quizEarnings);
+}
+
 function startQuizMode() {
   quizScore = 0;
   quizStreak = 0;
   quizDifficulty = 1;
-  quizEarnings = 0;
+  initQuizEarnings();
   document.getElementById('quiz-score').textContent = '0';
-  document.getElementById('quiz-earnings').textContent = '0';
   showScreen('quiz-screen');
   nextQuizQuestion();
 }
@@ -121,6 +133,37 @@ function nextQuizQuestion() {
   } else {
     showSingleMoneyQuiz(pool);
   }
+}
+
+// コンボを強制出題（履歴からの復習用）
+function showForcedComboQuiz(itemValues, total) {
+  const items = itemValues.map(v => MONEY_DATA.find(m => m.value === v)).filter(Boolean);
+  const hasBill = items.some(m => m.type === 'bill');
+  const pool = hasBill ? MONEY_DATA : MONEY_DATA.filter(m => m.type === 'coin');
+
+  currentQuizIsCombo = true;
+  currentQuizMoney = null;
+  currentComboItems = items;
+  currentQuizCorrectAnswer = total;
+
+  const displayEl = document.getElementById('quiz-coin-display');
+  displayEl.innerHTML = '';
+  displayEl.className = 'quiz-coin-display quiz-combo-mode';
+
+  items.forEach((money, i) => {
+    if (i > 0) {
+      const plus = document.createElement('div');
+      plus.classList.add('quiz-combo-plus');
+      plus.textContent = '+';
+      displayEl.appendChild(plus);
+    }
+    const svgWrapper = document.createElement('div');
+    svgWrapper.classList.add(money.type === 'bill' ? 'quiz-combo-bill' : 'quiz-combo-coin');
+    svgWrapper.innerHTML = money.svg;
+    displayEl.appendChild(svgWrapper);
+  });
+
+  renderQuizChoices(generateCombinationChoices(total, pool));
 }
 
 // 特定のコイン／お札を強制出題（履歴からの復習用）
@@ -167,6 +210,7 @@ function showCombinationQuiz(pool) {
   currentQuizMoney = null;
 
   const combo = generateCombination(pool);
+  currentComboItems = combo.items;
   currentQuizCorrectAnswer = combo.total;
 
   const displayEl = document.getElementById('quiz-coin-display');
@@ -192,8 +236,13 @@ function showCombinationQuiz(pool) {
 function selectQuizAnswer(selectedValue) {
   const isCorrect = selectedValue === currentQuizCorrectAnswer;
 
-  // 単体コインのみ stats を記録
-  if (!currentQuizIsCombo && currentQuizMoney) {
+  // stats を記録（単体・コンボ両方）
+  if (currentQuizIsCombo && currentComboItems) {
+    recordResult(currentQuizCorrectAnswer, isCorrect, {
+      isCombo: true,
+      comboItems: currentComboItems.map(m => m.value)
+    });
+  } else if (!currentQuizIsCombo && currentQuizMoney) {
     recordResult(currentQuizMoney.value, isCorrect);
   }
 
@@ -218,9 +267,10 @@ function selectQuizAnswer(selectedValue) {
     document.getElementById('quiz-score').textContent = quizScore;
     if (quizStreak >= 3 && quizDifficulty < 2) quizDifficulty = 2;
 
-    // 獲得金額を累積
+    // 獲得金額を累積・永続化
     const prevMilestone = Math.floor(quizEarnings / 10000);
     quizEarnings += currentQuizCorrectAnswer;
+    saveEarnings(quizEarnings);
     const newMilestone = Math.floor(quizEarnings / 10000);
     animatePop(document.getElementById('quiz-earnings'));
     document.getElementById('quiz-earnings').textContent = formatYen(quizEarnings);

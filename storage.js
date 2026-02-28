@@ -17,7 +17,7 @@ function saveStats(data) {
   } catch (e) { /* quota exceeded など無視 */ }
 }
 
-function recordResult(target, correct) {
+function recordResult(target, correct, extra = {}) {
   const data = loadStats();
 
   if (!data.questionStats[target]) {
@@ -26,10 +26,31 @@ function recordResult(target, correct) {
   data.questionStats[target].attempts++;
   if (correct) data.questionStats[target].correct++;
 
-  data.history.unshift({ target, correct, timestamp: Date.now() });
+  data.history.unshift({ target, correct, timestamp: Date.now(), ...extra });
   if (data.history.length > 20) data.history.length = 20;
 
   saveStats(data);
+}
+
+// === クイズ獲得金額の永続化（1時間TTL）===
+const EARNINGS_KEY = 'coinQuizEarnings';
+
+function loadEarnings() {
+  try {
+    const raw = localStorage.getItem(EARNINGS_KEY);
+    if (!raw) return { earnings: 0, lastUpdate: 0 };
+    return JSON.parse(raw);
+  } catch (e) { return { earnings: 0, lastUpdate: 0 }; }
+}
+
+function saveEarnings(earnings) {
+  try {
+    localStorage.setItem(EARNINGS_KEY, JSON.stringify({ earnings, lastUpdate: Date.now() }));
+  } catch (e) { /* quota exceeded など無視 */ }
+}
+
+function clearEarnings() {
+  try { localStorage.removeItem(EARNINGS_KEY); } catch (e) {}
 }
 
 function getAccuracy(target) {

@@ -25,6 +25,10 @@
             <span class="btn-icon">🎮</span>
             ゲームをする
           </button>
+          <button class="btn-quiz" onclick="startQuizMode()">
+            <span class="btn-icon">🪙</span>
+            これはいくら？
+          </button>
           <button class="btn-stats" onclick="startStatsMode()">
             <span class="btn-icon">📊</span>
             きろく
@@ -82,11 +86,6 @@
         <div class="game-tray">
           <div class="tray-label">えらんだおかね</div>
           <div class="tray-content" id="tray-content"></div>
-          <div class="tray-total">
-            <span>ごうけい：</span>
-            <span class="tray-total-amount" id="tray-total">0</span>
-            <span>えん</span>
-          </div>
         </div>
 
         <div class="game-actions">
@@ -107,7 +106,40 @@
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- これはいくら？クイズモード -->
+    <div id="quiz-screen" class="screen">
+      <div class="screen-header">
+        <button class="btn-back" onclick="goHome()">◀ もどる</button>
+        <h2>これはいくら？</h2>
+        <div class="score-display">
+          <span class="score-label">スコア</span>
+          <span class="score-value" id="quiz-score">0</span>
+        </div>
+      </div>
+
+      <div class="quiz-area">
+        <div class="quiz-question-text">これはいくらでしょう？</div>
+        <div class="quiz-coin-display" id="quiz-coin-display"></div>
+        <div class="quiz-choices" id="quiz-choices"></div>
+        <div class="quiz-earnings-bar">
+          <span class="quiz-earnings-label">ためたおかね</span>
+          <span class="quiz-earnings-amount" id="quiz-earnings">0</span>
+          <span class="quiz-earnings-unit">えん</span>
+        </div>
+      </div>
+
+      <!-- クイズ結果オーバーレイ -->
+      <div class="result-overlay" id="quiz-result-overlay">
+        <div class="result-card" id="quiz-result-card">
+          <div class="result-emoji" id="quiz-result-emoji"></div>
+          <div class="result-message" id="quiz-result-message"></div>
+          <div class="result-detail" id="quiz-result-detail"></div>
+          <div class="quiz-milestone" id="quiz-milestone"></div>
+          <button class="btn-next" onclick="nextQuizQuestion()">つぎへ ▶</button>
+        </div>
+      </div>
+    </div>
 
     <!-- きろく画面 -->
     <div id="stats-screen" class="screen">
@@ -130,8 +162,17 @@
         <div class="history-list" id="history-list"></div>
       </div>
     </div>
+  </div>
 
   <script src="money.js"></script>
-  <script src="app.js"></script>
+  <script src="utils.js"></script>
+  <script src="storage.js"></script>
+  <script src="learn.js"></script>
+  <script src="game.js"></script>
+  <script src="quiz.js"></script>
+  <script src="stats.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { initFloatingCoins(); });
+  </script>
 </body>
 </html>

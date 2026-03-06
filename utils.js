@@ -36,13 +36,14 @@ async function initMascot() {
   const queue = new Int32Array(W * H);
   let head = 0, tail = 0;
 
-  // ほぼ白(R,G,B > 230)ならキューに追加
+  // コーナーピクセルの色を背景色として自動検出（±40の許容範囲）
+  const bgR = px[0], bgG = px[1], bgB = px[2];
   const tryEnqueue = (x, y) => {
     if (x < 0 || x >= W || y < 0 || y >= H) return;
     const i = y * W + x;
     if (visited[i]) return;
     const p = i << 2;
-    if (px[p] < 230 || px[p + 1] < 230 || px[p + 2] < 230) return;
+    if (Math.abs(px[p] - bgR) > 40 || Math.abs(px[p + 1] - bgG) > 40 || Math.abs(px[p + 2] - bgB) > 40) return;
     visited[i] = 1;
     queue[tail++] = i;
   };

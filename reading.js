@@ -175,6 +175,7 @@ function checkReadingAnswer() {
   overlay.classList.add('active');
 
   if (isCorrect) {
+    mascotPlay('attack');
     card.className = 'result-card correct';
     const reactions = ['🎉', '⭐', '🌟', '🏆', '✨'];
     emoji.textContent   = reactions[Math.floor(Math.random() * reactions.length)];
@@ -193,6 +194,7 @@ function checkReadingAnswer() {
 
     launchConfetti();
   } else {
+    mascotPlay('damage');
     card.className = 'result-card wrong';
     emoji.textContent   = '🤔';
     message.textContent = 'ちがうよ！';

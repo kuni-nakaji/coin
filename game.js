@@ -175,6 +175,7 @@ function checkAnswer() {
   overlay.classList.add('active');
 
   if (isCorrect) {
+    mascotPlay('attack');
     correctStreak++;
     score += 10 * currentDifficulty;
     document.getElementById('score').textContent = score;
@@ -191,6 +192,7 @@ function checkAnswer() {
     detail.textContent = formatYen(target) + 'えん、ぴったり！';
     launchConfetti();
   } else {
+    mascotPlay('damage');
     correctStreak = 0;
     card.className = 'result-card wrong';
     emoji.textContent = '🤔';

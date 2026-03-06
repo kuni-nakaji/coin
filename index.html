@@ -29,6 +29,10 @@
             <span class="btn-icon">🪙</span>
             これはいくら？
           </button>
+          <button class="btn-reading" onclick="startReadingMode()">
+            <span class="btn-icon">🔤</span>
+            よみかた練習
+          </button>
           <button class="btn-stats" onclick="startStatsMode()">
             <span class="btn-icon">📊</span>
             きろく
@@ -141,6 +145,44 @@
       </div>
     </div>
 
+    <!-- よみかた練習モード -->
+    <div id="reading-screen" class="screen">
+      <div class="screen-header">
+        <button class="btn-back" onclick="goHome()">◀ もどる</button>
+        <h2>よみかた練習</h2>
+        <div class="score-display">
+          <span class="score-label">スコア</span>
+          <span class="score-value" id="reading-score">0</span>
+        </div>
+      </div>
+
+      <div class="reading-area">
+        <div class="reading-question-text">なんとよむ？</div>
+        <div class="reading-number" id="reading-number">0えん</div>
+
+        <div class="reading-answer-label">カードをならべよう</div>
+        <div class="reading-answer-area" id="reading-answer-area"></div>
+
+        <div class="reading-actions">
+          <button class="btn-reset" onclick="clearReadingAnswer()">ぜんぶけす</button>
+          <button class="btn-check" id="reading-check-btn" onclick="checkReadingAnswer()">こたえる！</button>
+        </div>
+
+        <div class="reading-palette-label">つかうカードをえらぼう</div>
+        <div class="reading-palette" id="reading-palette"></div>
+      </div>
+
+      <!-- 結果オーバーレイ -->
+      <div class="result-overlay" id="reading-result-overlay">
+        <div class="result-card" id="reading-result-card">
+          <div class="result-emoji" id="reading-result-emoji"></div>
+          <div class="result-message" id="reading-result-message"></div>
+          <div class="result-detail" id="reading-result-detail"></div>
+          <button class="btn-next" onclick="nextReadingQuestion()">つぎへ ▶</button>
+        </div>
+      </div>
+    </div>
+
     <!-- きろく画面 -->
     <div id="stats-screen" class="screen">
       <div class="screen-header">
@@ -170,6 +212,7 @@
   <script src="learn.js"></script>
   <script src="game.js"></script>
   <script src="quiz.js"></script>
+  <script src="reading.js"></script>
   <script src="stats.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => { initFloatingCoins(); });

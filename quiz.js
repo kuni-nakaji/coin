@@ -213,6 +213,7 @@ function selectQuizAnswer(selectedValue) {
   milestoneEl.textContent = '';
 
   if (isCorrect) {
+    mascotPlay('attack');
     quizStreak++;
     quizScore += 10;
     document.getElementById('quiz-score').textContent = quizScore;
@@ -235,6 +236,7 @@ function selectQuizAnswer(selectedValue) {
       setTimeout(launchConfetti, 700);
     }
   } else {
+    mascotPlay('damage');
     quizStreak = 0;
   }
 

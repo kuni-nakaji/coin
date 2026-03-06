@@ -1,11 +1,32 @@
 // === 画面切替 ===
+const MASCOT_SCREENS = new Set(['game-screen', 'quiz-screen', 'reading-screen']);
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  const mascot = document.getElementById('mascot');
+  if (MASCOT_SCREENS.has(id)) {
+    mascot.className = 'mascot mascot-visible';
+  } else {
+    mascot.className = 'mascot';
+  }
 }
 
 function goHome() {
   showScreen('title-screen');
+}
+
+// === マスコットアニメーション ===
+let _mascotTimer = null;
+function mascotPlay(state) {
+  const el = document.getElementById('mascot');
+  if (!el) return;
+  clearTimeout(_mascotTimer);
+  el.className = 'mascot mascot-visible mascot-' + state;
+  const dur = state === 'attack' ? 640 : 800;
+  _mascotTimer = setTimeout(() => {
+    el.className = 'mascot mascot-visible';
+  }, dur);
 }
 
 // === 紙吹雪 ===

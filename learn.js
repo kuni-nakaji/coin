@@ -64,24 +64,8 @@ function renderLearnGallery() {
 function renderLearnSelector() {
   const container = document.getElementById('learn-selector');
   container.innerHTML = '';
-
   MONEY_DATA.forEach(money => {
-    const btn = document.createElement('button');
-    btn.classList.add('money-btn');
-    if (money.type === 'bill') btn.classList.add('money-btn-bill');
-
-    const svgEl = document.createElement('div');
-    svgEl.classList.add('money-btn-svg');
-    svgEl.innerHTML = money.svg;
-
-    const labelEl = document.createElement('div');
-    labelEl.classList.add('money-btn-label');
-    labelEl.textContent = money.label;
-
-    btn.appendChild(svgEl);
-    btn.appendChild(labelEl);
-    btn.onclick = () => addLearnMoney(money.value);
-    container.appendChild(btn);
+    container.appendChild(createMoneyButton(money, () => addLearnMoney(money.value)));
   });
 }
 
@@ -93,57 +77,18 @@ function addLearnMoney(value) {
 }
 
 function updateLearnTotal() {
-  let total = 0;
-  for (const [v, c] of Object.entries(learnSelected)) {
-    total += Number(v) * c;
-  }
-  document.getElementById('learn-total').textContent = formatYen(total);
+  document.getElementById('learn-total').textContent = formatYen(calcSelectedTotal(learnSelected));
 }
 
 function renderLearnSelected() {
-  const container = document.getElementById('learn-selected');
-  container.innerHTML = '';
-
-  const items = Object.entries(learnSelected)
-    .filter(([, c]) => c > 0)
-    .map(([v, c]) => ({ value: Number(v), count: c }))
-    .sort((a, b) => b.value - a.value);
-
-  items.forEach(item => {
-    const money = MONEY_DATA.find(m => m.value === item.value);
-    if (!money) return;
-
-    const group = document.createElement('div');
-    group.classList.add('selected-group');
-
-    const stack = document.createElement('div');
-    stack.classList.add('selected-stack');
-
-    const visualCount = Math.min(item.count, 5);
-    for (let i = 0; i < visualCount; i++) {
-      const coinEl = document.createElement('div');
-      coinEl.classList.add('stacked-coin');
-      coinEl.style.width  = money.type === 'coin' ? '44px' : '80px';
-      coinEl.style.height = money.type === 'coin' ? '44px' : '40px';
-      coinEl.style.bottom = (i * 4) + 'px';
-      coinEl.style.left   = (i * 2) + 'px';
-      coinEl.innerHTML = money.svg;
-      stack.appendChild(coinEl);
-    }
-
-    const countBadge = document.createElement('div');
-    countBadge.classList.add('count-badge');
-    countBadge.textContent = '×' + item.count;
-
-    const removeBtn = document.createElement('button');
-    removeBtn.classList.add('remove-btn');
-    removeBtn.textContent = '−';
-    removeBtn.onclick = () => removeLearnMoney(item.value);
-
-    group.appendChild(stack);
-    group.appendChild(countBadge);
-    group.appendChild(removeBtn);
-    container.appendChild(group);
+  renderMoneyStack(document.getElementById('learn-selected'), learnSelected, {
+    maxVisual:  5,
+    coinW: '44px', coinH: '44px',
+    billW: '80px', billH: '40px',
+    stackV: 4,
+    groupClass: 'selected-group',
+    stackClass: 'selected-stack',
+    onRemove:   removeLearnMoney,
   });
 }
 

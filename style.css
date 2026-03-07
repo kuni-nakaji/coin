@@ -693,8 +693,8 @@ body {
   100% { top: 100vh; opacity: 0; transform: rotate(720deg) translateX(50px); }
 }
 
-/* ===== タイトル画面 きろくボタン ===== */
-.btn-stats {
+/* ===== タイトル画面 サブボタン共通（stats / quiz / reading）===== */
+.btn-stats, .btn-quiz, .btn-reading {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -708,12 +708,22 @@ body {
   box-shadow: 0 6px 20px rgba(0,0,0,0.25);
   letter-spacing: 0.05em;
   font-family: inherit;
-  background: rgba(255,255,255,0.2);
   color: white;
+}
+
+.btn-stats, .btn-quiz, .btn-reading {
+  /* active: 押し込み共通 */
+}
+.btn-stats:active, .btn-quiz:active, .btn-reading:active {
+  transform: translateY(0);
+}
+
+/* きろく: 半透明アウトライン */
+.btn-stats {
+  background: rgba(255,255,255,0.2);
   border: 2px solid rgba(255,255,255,0.6);
   backdrop-filter: blur(4px);
 }
-
 .btn-stats:hover {
   background: rgba(255,255,255,0.35);
   transform: translateY(-3px);
@@ -917,30 +927,11 @@ body {
 
 /* ===== これはいくら？クイズモード ===== */
 .btn-quiz {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.9rem 1.8rem;
-  font-size: 1.2rem;
-  font-weight: 800;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-  letter-spacing: 0.05em;
-  font-family: inherit;
   background: linear-gradient(135deg, #29B6F6, #0288D1);
-  color: white;
 }
-
 .btn-quiz:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 28px rgba(2,136,209,0.5);
-}
-
-.btn-quiz:active {
-  transform: translateY(0);
 }
 
 .quiz-area {
@@ -1232,30 +1223,11 @@ body {
 
 /* ===== よみかた練習モード ===== */
 .btn-reading {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.9rem 1.8rem;
-  font-size: 1.2rem;
-  font-weight: 800;
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-  letter-spacing: 0.05em;
-  font-family: inherit;
   background: linear-gradient(135deg, #AB47BC, #7B1FA2);
-  color: white;
 }
-
 .btn-reading:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 28px rgba(123,31,162,0.5);
-}
-
-.btn-reading:active {
-  transform: translateY(0);
 }
 
 .reading-area {

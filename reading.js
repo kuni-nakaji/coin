@@ -174,6 +174,8 @@ function checkReadingAnswer() {
 
   overlay.classList.add('active');
 
+  recordResult(readingTargetNum, isCorrect, { mode: 'reading' });
+
   if (isCorrect) {
     mascotPlay('attack');
     card.className = 'result-card correct';

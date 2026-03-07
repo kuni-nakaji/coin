@@ -87,11 +87,16 @@ function renderStatsScreen() {
     text.classList.add('history-text');
     text.textContent = formatYen(h.target) + 'えん';
 
+    const modeLabelMap = { game: 'ゲーム', quiz: 'いくら？', reading: 'よみかた' };
+    const badge = document.createElement('span');
+    badge.classList.add('history-badge', `history-badge-${h.mode || 'game'}`);
+    badge.textContent = modeLabelMap[h.mode] || 'ゲーム';
+
     const time = document.createElement('span');
     time.classList.add('history-time');
     time.textContent = formatTime(h.timestamp);
 
-    item.append(icon, text, time);
+    item.append(icon, text, badge, time);
 
     // 不正解アイテムにタップで復習ボタンを追加
     if (!h.correct) {

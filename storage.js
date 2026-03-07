@@ -17,7 +17,7 @@ function saveStats(data) {
   } catch (e) { /* quota exceeded など無視 */ }
 }
 
-function recordResult(target, correct) {
+function recordResult(target, correct, extra = {}) {
   const data = loadStats();
 
   if (!data.questionStats[target]) {
@@ -26,7 +26,7 @@ function recordResult(target, correct) {
   data.questionStats[target].attempts++;
   if (correct) data.questionStats[target].correct++;
 
-  data.history.unshift({ target, correct, timestamp: Date.now() });
+  data.history.unshift({ target, correct, timestamp: Date.now(), ...extra });
   if (data.history.length > 20) data.history.length = 20;
 
   saveStats(data);

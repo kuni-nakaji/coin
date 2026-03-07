@@ -194,7 +194,7 @@ function selectQuizAnswer(selectedValue) {
 
   // 単体コインのみ stats を記録
   if (!currentQuizIsCombo && currentQuizMoney) {
-    recordResult(currentQuizMoney.value, isCorrect);
+    recordResult(currentQuizMoney.value, isCorrect, { mode: 'quiz' });
   }
 
   // ボタンを無効化・正誤ハイライト

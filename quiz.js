@@ -315,3 +315,5 @@ function selectQuizAnswer(selectedValue) {
     detail.textContent  = 'ぜんぶで ' + formatYen(currentQuizCorrectAnswer) + ' えんだよ';
   }
 }
+
+}

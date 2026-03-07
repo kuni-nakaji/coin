@@ -236,17 +236,15 @@ function showCombinationQuiz(pool) {
 function selectQuizAnswer(selectedValue) {
   const isCorrect = selectedValue === currentQuizCorrectAnswer;
 
-  // 単体コインのみ stats を記録
-  if (!currentQuizIsCombo && currentQuizMoney) {
-    recordResult(currentQuizMoney.value, isCorrect, { mode: 'quiz' });
   // stats を記録（単体・コンボ両方）
   if (currentQuizIsCombo && currentComboItems) {
     recordResult(currentQuizCorrectAnswer, isCorrect, {
+      mode: 'quiz',
       isCombo: true,
       comboItems: currentComboItems.map(m => m.value)
     });
   } else if (!currentQuizIsCombo && currentQuizMoney) {
-    recordResult(currentQuizMoney.value, isCorrect);
+    recordResult(currentQuizMoney.value, isCorrect, { mode: 'quiz' });
   }
 
   // ボタンを無効化・正誤ハイライト
@@ -314,6 +312,4 @@ function selectQuizAnswer(selectedValue) {
     message.textContent = 'ちがうよ！';
     detail.textContent  = 'ぜんぶで ' + formatYen(currentQuizCorrectAnswer) + ' えんだよ';
   }
-}
-
 }

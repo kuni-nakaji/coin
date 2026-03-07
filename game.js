@@ -164,7 +164,7 @@ function checkAnswer() {
   const target = currentQuestion.target;
   const isCorrect = total === target;
 
-  recordResult(target, isCorrect);
+  recordResult(target, isCorrect, { mode: 'game' });
 
   const overlay  = document.getElementById('result-overlay');
   const card     = document.getElementById('result-card');

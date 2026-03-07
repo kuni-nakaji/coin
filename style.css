@@ -871,6 +871,17 @@ body {
   color: var(--text-light);
 }
 
+.history-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.history-badge-game    { background: #E3F2FD; color: #1565C0; }
+.history-badge-quiz    { background: #F3E5F5; color: #6A1B9A; }
+.history-badge-reading { background: #E8F5E9; color: #2E7D32; }
+
 .history-empty {
   color: var(--text-light);
   padding: 1rem;

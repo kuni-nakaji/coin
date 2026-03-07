@@ -236,6 +236,9 @@ function showCombinationQuiz(pool) {
 function selectQuizAnswer(selectedValue) {
   const isCorrect = selectedValue === currentQuizCorrectAnswer;
 
+  // 単体コインのみ stats を記録
+  if (!currentQuizIsCombo && currentQuizMoney) {
+    recordResult(currentQuizMoney.value, isCorrect, { mode: 'quiz' });
   // stats を記録（単体・コンボ両方）
   if (currentQuizIsCombo && currentComboItems) {
     recordResult(currentQuizCorrectAnswer, isCorrect, {

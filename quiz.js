@@ -135,11 +135,38 @@ function nextQuizQuestion() {
   }
 }
 
-// コンボを強制出題（履歴からの復習用）
-function showForcedComboQuiz(itemValues, total) {
+// 特定のコイン／お札を出題（pool 省略時は MONEY_DATA 全体で4択生成）
+// 履歴復習（pool なし）と通常出題（pool あり）を統合
+function showForcedCoinQuiz(money, pool = MONEY_DATA) {
+  currentQuizIsCombo = false;
+  currentQuizMoney = money;
+  currentQuizCorrectAnswer = money.value;
+
+  const displayEl = document.getElementById('quiz-coin-display');
+  displayEl.innerHTML = '';
+  displayEl.className = 'quiz-coin-display';
+
+  const svgWrapper = document.createElement('div');
+  svgWrapper.classList.add('quiz-coin-svg');
+  if (money.type === 'bill') svgWrapper.classList.add('quiz-bill-svg');
+  svgWrapper.innerHTML = money.svg;
+  displayEl.appendChild(svgWrapper);
+
+  renderQuizChoices(generateChoices(money, pool).map(m => m.value));
+}
+
+// 単体コイン／お札を重み付き選択して出題
+function showSingleMoneyQuiz(pool) {
+  showForcedCoinQuiz(weightedSelect(pool, m => m.value), pool);
+}
+
+// コンボを出題（pool 省略時はアイテムの種類から自動判定）
+// 履歴復習（pool なし）と通常出題（pool あり）を統合
+function showForcedComboQuiz(itemValues, total, pool = null) {
   const items = itemValues.map(v => MONEY_DATA.find(m => m.value === v)).filter(Boolean);
-  const hasBill = items.some(m => m.type === 'bill');
-  const pool = hasBill ? MONEY_DATA : MONEY_DATA.filter(m => m.type === 'coin');
+  const choicePool = pool ?? (items.some(m => m.type === 'bill')
+    ? MONEY_DATA
+    : MONEY_DATA.filter(m => m.type === 'coin'));
 
   currentQuizIsCombo = true;
   currentQuizMoney = null;
@@ -163,74 +190,13 @@ function showForcedComboQuiz(itemValues, total) {
     displayEl.appendChild(svgWrapper);
   });
 
-  renderQuizChoices(generateCombinationChoices(total, pool));
+  renderQuizChoices(generateCombinationChoices(total, choicePool));
 }
 
-// 特定のコイン／お札を強制出題（履歴からの復習用）
-function showForcedCoinQuiz(money) {
-  currentQuizIsCombo = false;
-  currentQuizMoney = money;
-  currentQuizCorrectAnswer = money.value;
-
-  const displayEl = document.getElementById('quiz-coin-display');
-  displayEl.innerHTML = '';
-  displayEl.className = 'quiz-coin-display';
-
-  const svgWrapper = document.createElement('div');
-  svgWrapper.classList.add('quiz-coin-svg');
-  if (money.type === 'bill') svgWrapper.classList.add('quiz-bill-svg');
-  svgWrapper.innerHTML = money.svg;
-  displayEl.appendChild(svgWrapper);
-
-  renderQuizChoices(generateChoices(money, MONEY_DATA).map(m => m.value));
-}
-
-// 単体コイン／お札を出題
-function showSingleMoneyQuiz(pool) {
-  currentQuizIsCombo = false;
-  currentQuizMoney = weightedSelect(pool, m => m.value);
-  currentQuizCorrectAnswer = currentQuizMoney.value;
-
-  const displayEl = document.getElementById('quiz-coin-display');
-  displayEl.innerHTML = '';
-  displayEl.className = 'quiz-coin-display';
-
-  const svgWrapper = document.createElement('div');
-  svgWrapper.classList.add('quiz-coin-svg');
-  if (currentQuizMoney.type === 'bill') svgWrapper.classList.add('quiz-bill-svg');
-  svgWrapper.innerHTML = currentQuizMoney.svg;
-  displayEl.appendChild(svgWrapper);
-
-  renderQuizChoices(generateChoices(currentQuizMoney, pool).map(m => m.value));
-}
-
-// 複数枚の組み合わせを出題（1枚ずつ個別表示）
+// 複数枚の組み合わせを生成して出題
 function showCombinationQuiz(pool) {
-  currentQuizIsCombo = true;
-  currentQuizMoney = null;
-
   const combo = generateCombination(pool);
-  currentComboItems = combo.items;
-  currentQuizCorrectAnswer = combo.total;
-
-  const displayEl = document.getElementById('quiz-coin-display');
-  displayEl.innerHTML = '';
-  displayEl.className = 'quiz-coin-display quiz-combo-mode';
-
-  combo.items.forEach((money, i) => {
-    if (i > 0) {
-      const plus = document.createElement('div');
-      plus.classList.add('quiz-combo-plus');
-      plus.textContent = '+';
-      displayEl.appendChild(plus);
-    }
-    const svgWrapper = document.createElement('div');
-    svgWrapper.classList.add(money.type === 'bill' ? 'quiz-combo-bill' : 'quiz-combo-coin');
-    svgWrapper.innerHTML = money.svg;
-    displayEl.appendChild(svgWrapper);
-  });
-
-  renderQuizChoices(generateCombinationChoices(combo.total, pool));
+  showForcedComboQuiz(combo.items.map(m => m.value), combo.total, pool);
 }
 
 function selectQuizAnswer(selectedValue) {

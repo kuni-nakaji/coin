@@ -29,24 +29,8 @@ function getAvailableMoney() {
 function renderGameSelector() {
   const container = document.getElementById('game-selector');
   container.innerHTML = '';
-
   getAvailableMoney().forEach(money => {
-    const btn = document.createElement('button');
-    btn.classList.add('money-btn');
-    if (money.type === 'bill') btn.classList.add('money-btn-bill');
-
-    const svgEl = document.createElement('div');
-    svgEl.classList.add('money-btn-svg');
-    svgEl.innerHTML = money.svg;
-
-    const labelEl = document.createElement('div');
-    labelEl.classList.add('money-btn-label');
-    labelEl.textContent = money.label;
-
-    btn.appendChild(svgEl);
-    btn.appendChild(labelEl);
-    btn.onclick = () => addGameMoney(money.value);
-    container.appendChild(btn);
+    container.appendChild(createMoneyButton(money, () => addGameMoney(money.value)));
   });
 }
 
@@ -80,58 +64,12 @@ function nextQuestion() {
 function addGameMoney(value) {
   gameSelected[value] = (gameSelected[value] || 0) + 1;
   renderTray();
-  updateTrayTotal();
 }
 
 function renderTray() {
-  const container = document.getElementById('tray-content');
-  container.innerHTML = '';
-
-  const items = Object.entries(gameSelected)
-    .filter(([, c]) => c > 0)
-    .map(([v, c]) => ({ value: Number(v), count: c }))
-    .sort((a, b) => b.value - a.value);
-
-  if (items.length === 0) {
-    container.innerHTML = '<div class="tray-empty">おかねをえらんでね</div>';
-    return;
-  }
-
-  items.forEach(item => {
-    const money = MONEY_DATA.find(m => m.value === item.value);
-    if (!money) return;
-
-    const group = document.createElement('div');
-    group.classList.add('tray-group');
-
-    const stackWrap = document.createElement('div');
-    stackWrap.classList.add('tray-stack');
-
-    const visualCount = Math.min(item.count, 4);
-    for (let i = 0; i < visualCount; i++) {
-      const el = document.createElement('div');
-      el.classList.add('stacked-coin');
-      el.style.width  = money.type === 'coin' ? '40px' : '72px';
-      el.style.height = money.type === 'coin' ? '40px' : '36px';
-      el.style.bottom = (i * 3) + 'px';
-      el.style.left   = (i * 2) + 'px';
-      el.innerHTML = money.svg;
-      stackWrap.appendChild(el);
-    }
-
-    const badge = document.createElement('div');
-    badge.classList.add('count-badge');
-    badge.textContent = '×' + item.count;
-
-    const removeBtn = document.createElement('button');
-    removeBtn.classList.add('remove-btn');
-    removeBtn.textContent = '−';
-    removeBtn.onclick = () => removeGameMoney(item.value);
-
-    group.appendChild(stackWrap);
-    group.appendChild(badge);
-    group.appendChild(removeBtn);
-    container.appendChild(group);
+  renderMoneyStack(document.getElementById('tray-content'), gameSelected, {
+    emptyText: 'おかねをえらんでね',
+    onRemove:  removeGameMoney,
   });
 }
 
@@ -142,25 +80,15 @@ function removeGameMoney(value) {
     delete gameSelected[value];
   }
   renderTray();
-  updateTrayTotal();
-}
-
-function updateTrayTotal() {
-  let total = 0;
-  for (const [v, c] of Object.entries(gameSelected)) {
-    total += Number(v) * c;
-  }
-  return total;
 }
 
 function resetGame() {
   gameSelected = {};
   renderTray();
-  updateTrayTotal();
 }
 
 function checkAnswer() {
-  const total = updateTrayTotal();
+  const total = calcSelectedTotal(gameSelected);
   const target = currentQuestion.target;
   const isCorrect = total === target;
 

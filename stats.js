@@ -121,55 +121,69 @@ function formatTime(ts) {
   return Math.floor(diffH / 24) + 'にちまえ';
 }
 
+// ===== 復習ヘルパー =====
+function _startQuizReview() {
+  quizScore = 0;
+  quizStreak = 0;
+  quizDifficulty = 1;
+  initQuizEarnings();
+  document.getElementById('quiz-result-overlay').classList.remove('active');
+  document.getElementById('quiz-score').textContent = '0';
+  showScreen('quiz-screen');
+}
+
+function _startGameReview(target) {
+  const question = QUESTIONS.find(q => q.target === target);
+  if (!question) return;
+
+  weakModeOnly = false;
+  score = 0;
+  correctStreak = 0;
+  currentDifficulty = question.difficulty;
+  document.getElementById('score').textContent = '0';
+  document.getElementById('weak-badge').style.display = 'none';
+  gameSelected = {};
+  showScreen('game-screen');
+  renderGameSelector();
+
+  currentQuestion = question;
+  document.getElementById('question-text').textContent = 'ぴったり　つくってみよう！';
+  document.getElementById('target-amount').innerHTML = formatYen(target) + '<span>えん</span>';
+  renderTray();
+}
+
 // 履歴アイテムをタップして同じパターンを復習
 function reviewFromHistory(h) {
-  const target = typeof h === 'object' ? h.target : h;
+  if (!h || typeof h !== 'object') return;
+  const { target, mode, isCombo, comboItems } = h;
 
-  // コンボ問題の復習
-  if (h.isCombo && h.comboItems) {
-    quizScore = 0;
-    quizStreak = 0;
-    quizDifficulty = 1;
-    initQuizEarnings();
-    document.getElementById('quiz-result-overlay').classList.remove('active');
-    document.getElementById('quiz-score').textContent = '0';
-    showScreen('quiz-screen');
-    showForcedComboQuiz(h.comboItems, h.target);
+  // コンボクイズの復習
+  if (isCombo && comboItems) {
+    _startQuizReview();
+    showForcedComboQuiz(comboItems, target);
     return;
   }
 
-  const money = MONEY_DATA.find(m => m.value === target);
+  // mode フィールドによるルーティング
+  if (mode === 'quiz') {
+    const money = MONEY_DATA.find(m => m.value === target);
+    if (!money) return;
+    _startQuizReview();
+    showForcedCoinQuiz(money);
+    return;
+  }
 
+  if (mode === 'game') {
+    _startGameReview(target);
+    return;
+  }
+
+  // mode 未設定（旧データ後方互換）: MONEY_DATA に存在すればクイズ、なければゲーム
+  const money = MONEY_DATA.find(m => m.value === target);
   if (money) {
-    // コイン/お札 → クイズモードで特定の貨幣を出題
-    quizScore = 0;
-    quizStreak = 0;
-    quizDifficulty = 1;
-    initQuizEarnings();
-    document.getElementById('quiz-result-overlay').classList.remove('active');
-    document.getElementById('quiz-score').textContent = '0';
-    showScreen('quiz-screen');
+    _startQuizReview();
     showForcedCoinQuiz(money);
   } else {
-    // ゲーム問題の金額 → ゲームモードで特定の問題を出題
-    const question = QUESTIONS.find(q => q.target === target);
-    if (!question) return;
-
-    weakModeOnly = false;
-    score = 0;
-    correctStreak = 0;
-    currentDifficulty = question.difficulty;
-    document.getElementById('score').textContent = '0';
-    document.getElementById('weak-badge').style.display = 'none';
-    gameSelected = {};
-    showScreen('game-screen');
-    renderGameSelector();
-
-    // 特定の問題を強制セット
-    currentQuestion = question;
-    document.getElementById('question-text').textContent = 'ぴったり　つくってみよう！';
-    document.getElementById('target-amount').innerHTML =
-      formatYen(target) + '<span>えん</span>';
-    renderTray();
+    _startGameReview(target);
   }
 }

@@ -116,3 +116,95 @@ function animatePop(el) {
   void el.offsetWidth;
   el.classList.add('pop');
 }
+
+// === 共通: 貨幣ボタン生成（learn / game で共用）===
+function createMoneyButton(money, onClick) {
+  const btn = document.createElement('button');
+  btn.classList.add('money-btn');
+  if (money.type === 'bill') btn.classList.add('money-btn-bill');
+
+  const svgEl = document.createElement('div');
+  svgEl.classList.add('money-btn-svg');
+  svgEl.innerHTML = money.svg;
+
+  const labelEl = document.createElement('div');
+  labelEl.classList.add('money-btn-label');
+  labelEl.textContent = money.label;
+
+  btn.append(svgEl, labelEl);
+  btn.onclick = onClick;
+  return btn;
+}
+
+// === 共通: 選択済み貨幣をスタック表示（learn / game で共用）===
+// opts: { maxVisual, coinW, coinH, billW, billH, stackV, stackH,
+//         groupClass, stackClass, emptyText, onRemove }
+function renderMoneyStack(containerEl, selected, opts = {}) {
+  containerEl.innerHTML = '';
+
+  const {
+    maxVisual  = 4,
+    coinW = '40px', coinH = '40px',
+    billW = '72px', billH = '36px',
+    stackV = 3,     stackH = 2,
+    groupClass = 'tray-group',
+    stackClass = 'tray-stack',
+    emptyText  = null,
+    onRemove   = null,
+  } = opts;
+
+  const items = Object.entries(selected)
+    .filter(([, c]) => c > 0)
+    .map(([v, c]) => ({ value: Number(v), count: c }))
+    .sort((a, b) => b.value - a.value);
+
+  if (items.length === 0) {
+    if (emptyText) containerEl.innerHTML = `<div class="tray-empty">${emptyText}</div>`;
+    return;
+  }
+
+  items.forEach(({ value, count }) => {
+    const money = MONEY_DATA.find(m => m.value === value);
+    if (!money) return;
+
+    const group = document.createElement('div');
+    group.classList.add(groupClass);
+
+    const stack = document.createElement('div');
+    stack.classList.add(stackClass);
+
+    for (let i = 0; i < Math.min(count, maxVisual); i++) {
+      const el = document.createElement('div');
+      el.classList.add('stacked-coin');
+      el.style.width  = money.type === 'coin' ? coinW : billW;
+      el.style.height = money.type === 'coin' ? coinH : billH;
+      el.style.bottom = (i * stackV) + 'px';
+      el.style.left   = (i * stackH) + 'px';
+      el.innerHTML = money.svg;
+      stack.appendChild(el);
+    }
+
+    const badge = document.createElement('div');
+    badge.classList.add('count-badge');
+    badge.textContent = '×' + count;
+
+    group.append(stack, badge);
+
+    if (onRemove) {
+      const removeBtn = document.createElement('button');
+      removeBtn.classList.add('remove-btn');
+      removeBtn.textContent = '−';
+      removeBtn.onclick = () => onRemove(value);
+      group.appendChild(removeBtn);
+    }
+
+    containerEl.appendChild(group);
+  });
+}
+
+// === 共通: 選択済み貨幣の合計計算 ===
+function calcSelectedTotal(selected) {
+  let total = 0;
+  for (const [v, c] of Object.entries(selected)) total += Number(v) * c;
+  return total;
+}

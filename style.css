@@ -188,16 +188,16 @@ body {
   margin: 0 auto;
 }
 
-/* きろく だけ下段中央に全幅配置 */
+/* おみせ・きろく は下段2列に並ぶ（全幅解除） */
 .title-buttons .btn-stats {
-  grid-column: 1 / -1;
-  max-width: 280px;
-  margin: 0 auto;
+  grid-column: auto;
+  max-width: none;
+  margin: 0;
 }
 
 /* ===== ボタン共通（3D 玩具スタイル）===== */
 .btn-primary, .btn-success,
-.btn-stats, .btn-quiz, .btn-reading {
+.btn-stats, .btn-quiz, .btn-reading, .btn-shop {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -224,6 +224,7 @@ body {
 .title-buttons > :nth-child(3) { animation-delay: 0.34s; }
 .title-buttons > :nth-child(4) { animation-delay: 0.42s; }
 .title-buttons > :nth-child(5) { animation-delay: 0.50s; }
+.title-buttons > :nth-child(6) { animation-delay: 0.58s; }
 
 @keyframes btnSlideIn {
   from { opacity: 0; transform: translateY(28px) scale(0.85); }
@@ -232,14 +233,14 @@ body {
 
 /* ホバー */
 .btn-primary:hover, .btn-success:hover,
-.btn-stats:hover, .btn-quiz:hover, .btn-reading:hover {
+.btn-stats:hover, .btn-quiz:hover, .btn-reading:hover, .btn-shop:hover {
   top: -3px;
   filter: brightness(1.06);
 }
 
 /* 押し込み（3D 感）*/
 .btn-primary:active, .btn-success:active,
-.btn-stats:active, .btn-quiz:active, .btn-reading:active {
+.btn-stats:active, .btn-quiz:active, .btn-reading:active, .btn-shop:active {
   top: 4px;
 }
 
@@ -295,6 +296,18 @@ body {
 }
 .btn-stats:active {
   box-shadow: 0 2px 0 rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* おみせ（ウォームアンバー）*/
+.btn-shop {
+  background: linear-gradient(135deg, #FFCB6B, #FF9B42);
+  color: #3A1A00;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3);
+  box-shadow: 0 6px 0 #C06010, 0 10px 24px rgba(192,96,16,0.35);
+  border: none;
+}
+.btn-shop:active {
+  box-shadow: 0 2px 0 #C06010, 0 4px 10px rgba(192,96,16,0.25);
 }
 
 .btn-icon {

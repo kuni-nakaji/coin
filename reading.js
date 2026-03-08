@@ -81,6 +81,24 @@ function startReadingMode() {
   nextReadingQuestion();
 }
 
+// 履歴から復習: 指定した数を強制出題
+function startReadingReview(targetNum) {
+  readingScore = 0;
+  readingStreak = 0;
+  readingDifficulty = 1;
+  document.getElementById('reading-score').textContent = '0';
+  document.getElementById('reading-result-overlay').classList.remove('active');
+  showScreen('reading-screen');
+
+  readingTargetNum = targetNum;
+  readingCorrect   = decomposeReading(readingTargetNum);
+  readingCards     = buildReadingPalette(readingCorrect);
+  readingAnswer    = [];
+
+  document.getElementById('reading-number').textContent = formatYen(readingTargetNum) + 'えん';
+  renderReadingUI();
+}
+
 function nextReadingQuestion() {
   document.getElementById('reading-result-overlay').classList.remove('active');
 

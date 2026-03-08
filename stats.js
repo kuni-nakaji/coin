@@ -178,6 +178,11 @@ function reviewFromHistory(h) {
     return;
   }
 
+  if (mode === 'reading') {
+    startReadingReview(target);
+    return;
+  }
+
   // mode 未設定（旧データ後方互換）: MONEY_DATA に存在すればクイズ、なければゲーム
   const money = MONEY_DATA.find(m => m.value === target);
   if (money) {

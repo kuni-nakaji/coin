@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ハム吉のおみせ 🐹</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ====================================================
+       RESET & VARIABLES
+    ==================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:        #FFF8EE;
+      --warm-white:   #FFFDF8;
+      --shop-bg:      #FFF3DC;
+      --ham-green:    #4B7A5A;
+      --ham-green-dk: #2F5238;
+      --ham-green-lt: #6FAF84;
+      --orange:       #E8722A;
+      --orange-dk:    #AA4D10;
+      --orange-lt:    #FFAB6E;
+      --yellow:       #F5C842;
+      --text:         #3A2010;
+      --text-mid:     #6B4A2A;
+      --text-lite:    #A07850;
+      --border:       rgba(90,50,10,0.12);
+      --shadow-card:  0 8px 32px rgba(90,50,10,0.12);
+      --shadow-btn:   0 6px 0;
+      --radius:       22px;
+      --radius-sm:    14px;
+      --font:         'M PLUS Rounded 1c', 'Hiragino Maru Gothic ProN', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font);
+      background: var(--cream);
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button { font-family: var(--font); cursor: pointer; user-select: none; }
+
+    /* ====================================================
+       APP SHELL
+    ==================================================== */
+    #app {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ====================================================
+       SHOP SCENE HEADER
+    ==================================================== */
+    .shop-scene {
+      position: relative;
+      height: 270px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background:
+        radial-gradient(ellipse at 20% 60%, rgba(255,200,100,0.6) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 30%, rgba(200,240,200,0.5) 0%, transparent 50%),
+        linear-gradient(160deg, #FFE8B0 0%, #FFCC80 40%, #FFB74D 100%);
+    }
+
+    /* Scene image (shown when hamster-shop.jpg exists) */
+    .scene-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 15%;
+    }
+
+    /* Floating decoration items (shown in CSS fallback) */
+    .scene-deco {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .deco-item {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.4;
+      animation: floatDeco 4s ease-in-out infinite;
+    }
+    .deco-item:nth-child(1) { top: 15%; left: 8%; animation-delay: 0s; font-size: 2.5rem; opacity: 0.3; }
+    .deco-item:nth-child(2) { top: 30%; left: 75%; animation-delay: 1s; }
+    .deco-item:nth-child(3) { top: 55%; left: 20%; animation-delay: 2s; font-size: 1.6rem; }
+    .deco-item:nth-child(4) { top: 10%; left: 55%; animation-delay: 0.5s; font-size: 1.5rem; opacity: 0.35; }
+    .deco-item:nth-child(5) { top: 65%; left: 60%; animation-delay: 1.5s; }
+    .deco-item:nth-child(6) { top: 40%; left: 88%; animation-delay: 2.5s; font-size: 1.5rem; }
+
+    @keyframes floatDeco {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50%       { transform: translateY(-10px) rotate(5deg); }
+    }
+
+    /* Gradient fade-to-cream at bottom */
+    .scene-fade {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 110px;
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(255,248,238,0.6) 50%,
+        var(--cream) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* Shop sign */
+    .shop-sign {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: white;
+      border: 3px solid #E8B860;
+      border-radius: 12px;
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--text);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      z-index: 20;
+    }
+
+    /* Back button */
+    .btn-back-home {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 20;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 24px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text-mid);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+    .btn-back-home:hover { transform: scale(1.05); }
+
+    /* Score badge */
+    .score-badge {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      background: rgba(255,255,255,0.92);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .score-star { color: #F5C842; }
+
+    /* ====================================================
+       HAMSTER + SPEECH BUBBLE
+    ==================================================== */
+    .hamster-conversation {
+      position: absolute;
+      bottom: 24px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      z-index: 15;
+    }
+
+    .hamster-avatar {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid white;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #FFDDA0, #FFBB66);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      animation: avatarBob 2.5s ease-in-out infinite;
+    }
+    .hamster-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 52% 22%;
+    }
+
+    @keyframes avatarBob {
+      0%, 100% { transform: rotate(-4deg) scale(1); }
+      50%       { transform: rotate(4deg) scale(1.04); }
+    }
+
+    /* Speech bubble */
+    .speech-bubble {
+      flex: 1;
+      background: white;
+      border-radius: 20px 20px 20px 6px;
+      padding: 12px 16px 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+      position: relative;
+      min-height: 60px;
+      transition: box-shadow 0.4s;
+    }
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: 12px;
+      left: -12px;
+      border: 8px solid transparent;
+      border-right-color: white;
+      border-left: 0;
+    }
+    /* Glow states for hints */
+    .speech-bubble.hint-yellow { box-shadow: 0 4px 20px rgba(245,200,66,0.6), 0 0 0 2px #F5C842; }
+    .speech-bubble.hint-orange { box-shadow: 0 4px 20px rgba(232,114,42,0.6), 0 0 0 2px var(--orange); }
+
+    .bubble-inner {
+      position: relative;
+      overflow: hidden;
+    }
+    .bubble-line {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.5;
+      display: block;
+      animation: lineIn 0.3s ease forwards;
+    }
+    .bubble-line.color-accent { color: var(--ham-green); }
+    .bubble-line.color-price  { color: var(--orange); font-size: 1.1rem; }
+
+    @keyframes lineIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Timer bar inside bubble */
+    .bubble-timer {
+      height: 3px;
+      background: rgba(0,0,0,0.06);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .bubble-timer-fill {
+      height: 100%;
+      background: var(--ham-green);
+      border-radius: 2px;
+      transition: width 1s linear, background 0.5s;
+      width: 0%;
+    }
+    .bubble-timer-fill.warn   { background: var(--yellow); }
+    .bubble-timer-fill.urgent { background: var(--orange); }
+
+    /* ====================================================
+       GAME CARD (pulls up over scene)
+    ==================================================== */
+    .game-card {
+      flex: 1;
+      background: var(--warm-white);
+      border-radius: 28px 28px 0 0;
+      margin-top: -20px;
+      position: relative;
+      z-index: 10;
+      padding: 28px 18px 40px;
+      box-shadow: 0 -6px 28px rgba(90,50,10,0.1);
+    }
+    /* Drag handle */
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 4px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 2px;
+    }
+
+    /* ====================================================
+       PHASE SYSTEM
+    ==================================================== */
+    .phase {
+      display: none;
+    }
+    .phase.active {
+      display: block;
+      animation: phaseReveal 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes phaseReveal {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Phase heading */
+    .phase-title {
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text-lite);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    /* ====================================================
+       PHASE 1: ITEM SELECTION
+    ==================================================== */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .item-card {
+      background: white;
+      border: 3px solid transparent;
+      border-radius: 20px;
+      padding: 14px 6px 10px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(90,50,10,0.09);
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.2s,
+                  border-color 0.2s,
+                  background 0.2s;
+      animation: cardIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .item-card:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 10px 28px rgba(90,50,10,0.16);
+    }
+    .item-card:active {
+      transform: translateY(0) scale(0.94);
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.85); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .item-emoji {
+      font-size: 2.6rem;
+      display: block;
+      margin-bottom: 5px;
+      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.12));
+    }
+    .item-name {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .item-price-tag {
+      display: inline-block;
+      background: var(--orange);
+      color: white;
+      border-radius: 20px;
+      padding: 2px 8px;
+      font-size: 0.82rem;
+      font-weight: 900;
+    }
+
+    /* ====================================================
+       PHASE 2: PAYMENT
+    ==================================================== */
+
+    /* Selected item banner */
+    .item-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #F0FAF3, #E4F5E9);
+      border: 2px solid rgba(75,122,90,0.2);
+      border-radius: 20px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+    }
+    .banner-emoji {
+      font-size: 3.2rem;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+    }
+    .banner-info { flex: 1; }
+    .banner-name {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text);
+      display: block;
+      margin-bottom: 3px;
+    }
+    .banner-price {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--ham-green);
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+      line-height: 1;
+    }
+    .banner-yen { font-size: 1rem; font-weight: 700; }
+
+    /* Coin tray (selected coins) */
+    .tray-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-lite);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    .coin-tray {
+      min-height: 50px;
+      background: white;
+      border: 2px dashed rgba(0,0,0,0.12);
+      border-radius: 16px;
+      padding: 8px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 10px;
+      transition: border-color 0.3s;
+    }
+    .coin-tray.has-coins {
+      border-style: solid;
+      border-color: rgba(75,122,90,0.25);
+    }
+    .tray-placeholder {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: rgba(0,0,0,0.25);
+    }
+
+    /* Coin chip in tray */
+    .coin-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--cream);
+      border: 1.5px solid rgba(0,0,0,0.08);
+      border-radius: 20px;
+      padding: 4px 10px 4px 6px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text);
+      cursor: pointer;
+      animation: chipPop 0.25s cubic-bezier(0.34,1.56,0.64,1);
+      transition: background 0.15s;
+    }
+    .coin-chip:hover { background: #FFE8E8; }
+    .coin-chip:hover .chip-icon::after { content: '✕'; font-size: 0.7rem; }
+    .chip-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(0,0,0,0.15);
+      flex-shrink: 0;
+    }
+    /* bill chip */
+    .coin-chip.is-bill .chip-dot {
+      width: 22px;
+      height: 13px;
+      border-radius: 3px;
+    }
+
+    @keyframes chipPop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    /* Total bar */
+    .total-bar {
+      background: linear-gradient(135deg, #FFF3E0, #FFE8C8);
+      border: 2px solid rgba(232,114,42,0.18);
+      border-radius: 16px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .total-label-text {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-mid);
+    }
+    .total-number {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--orange);
+      transition: color 0.3s;
+    }
+    .total-number.exact  { color: var(--ham-green); }
+    .total-number.over   { color: #DC2626; }
+    .total-number.pop    { animation: numBounce 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+    .total-yen-unit      { font-size: 1rem; font-weight: 700; }
+
+    @keyframes numBounce {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.35); }
+      100% { transform: scale(1); }
+    }
+
+    /* Coin palette */
+    .palette-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--text-lite);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .coins-palette {
+      background: rgba(0,0,0,0.03);
+      border-radius: 20px;
+      padding: 14px 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    /* Coin button wrapper */
+    .palette-coin {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      transition: transform 0.16s cubic-bezier(0.34,1.56,0.64,1);
+      position: relative;
+    }
+    .palette-coin:active { transform: scale(0.86); }
+    .palette-coin.hint-glow .coin-svg-wrap {
+      animation: hintPulse 0.8s ease-in-out infinite;
+    }
+    @keyframes hintPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(245,200,66,0)); }
+      50%       { transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(245,200,66,0.9)); }
+    }
+
+    .coin-svg-wrap {
+      display: block;
+    }
+    .coin-svg-wrap svg {
+      display: block;
+    }
+
+    .palette-coin-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--text-mid);
+    }
+
+    /* Bill button */
+    .palette-bill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+      transition: transform 0.16s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .palette-bill:active { transform: scale(0.88); }
+    .bill-svg-wrap svg { display: block; }
+    .palette-bill-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--text-mid);
+    }
+
+    /* Action row */
+    .action-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-clear {
+      flex: 1;
+      padding: 14px;
+      background: white;
+      border: 2.5px solid rgba(0,0,0,0.1);
+      border-radius: 16px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-mid);
+      transition: all 0.18s;
+    }
+    .btn-clear:hover { background: #FFF0F0; border-color: #FFBBBB; }
+    .btn-clear:active { transform: scale(0.95); }
+
+    .btn-pay {
+      flex: 2.2;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--ham-green-lt), var(--ham-green));
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 6px 0 var(--ham-green-dk), 0 8px 22px rgba(47,82,56,0.3);
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: white;
+      letter-spacing: 0.04em;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-pay:active {
+      transform: translateY(5px);
+      box-shadow: 0 1px 0 var(--ham-green-dk), 0 3px 10px rgba(47,82,56,0.3);
+    }
+    .btn-pay:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 3px 0 var(--ham-green-dk);
+    }
+
+    /* ====================================================
+       PHASE 3: RESULT
+    ==================================================== */
+    .result-wrap {
+      text-align: center;
+      padding: 10px 0 8px;
+    }
+    .result-big-emoji {
+      font-size: 5rem;
+      display: block;
+      animation: resultDrop 0.65s cubic-bezier(0.34,1.56,0.64,1);
+      margin-bottom: 10px;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.18));
+    }
+    @keyframes resultDrop {
+      0%   { transform: translateY(-50px) rotate(-20deg) scale(0.5); opacity: 0; }
+      70%  { transform: translateY(6px) rotate(6deg) scale(1.1); opacity: 1; }
+      100% { transform: translateY(0) rotate(0) scale(1); opacity: 1; }
+    }
+    .result-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .result-sub {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-mid);
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    /* Change box */
+    .change-box {
+      background: linear-gradient(135deg, #FFF3E0, #FFE4C0);
+      border: 2px solid rgba(232,114,42,0.22);
+      border-radius: 20px;
+      padding: 16px 24px;
+      margin-bottom: 20px;
+      display: inline-block;
+      min-width: 200px;
+    }
+    .change-box-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-mid);
+      margin-bottom: 4px;
+    }
+    .change-box-amount {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--orange);
+      line-height: 1;
+    }
+    .change-box-yen { font-size: 1.2rem; }
+
+    /* Perfect bonus */
+    .perfect-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
+      color: white;
+      border-radius: 30px;
+      padding: 6px 20px;
+      font-size: 0.9rem;
+      font-weight: 900;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 12px rgba(255,160,0,0.4);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+      animation: badgePop 0.5s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes badgePop {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .btn-next {
+      width: 100%;
+      max-width: 320px;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--orange-lt), var(--orange));
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 7px 0 var(--orange-dk), 0 10px 26px rgba(170,77,16,0.3);
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: white;
+      letter-spacing: 0.04em;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-next:active {
+      transform: translateY(6px);
+      box-shadow: 0 1px 0 var(--orange-dk), 0 4px 12px rgba(170,77,16,0.3);
+    }
+
+    /* ====================================================
+       CONFETTI
+    ==================================================== */
+    #confetti-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .cf {
+      position: absolute;
+      top: -16px;
+      border-radius: 3px;
+      animation: cfFall linear forwards;
+    }
+    @keyframes cfFall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(800deg); opacity: 0; }
+    }
+
+    /* ====================================================
+       SHAKE ANIMATION (wrong answer)
+    ==================================================== */
+    .shake {
+      animation: shakeX 0.4s ease !important;
+    }
+    @keyframes shakeX {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-8px); }
+      40%       { transform: translateX(8px); }
+      60%       { transform: translateX(-6px); }
+      80%       { transform: translateX(6px); }
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===== SHOP SCENE ===== -->
+  <div class="shop-scene">
+    <!-- Real photo (user places hamster-shop.jpg in same folder) -->
+    <img class="scene-img" src="hamster-shop.jpg" alt=""
+         onerror="this.style.display='none'">
+
+    <!-- CSS fallback decorations (visible when no image) -->
+    <div class="scene-deco">
+      <span class="deco-item">🍎</span>
+      <span class="deco-item">🌽</span>
+      <span class="deco-item">🪙</span>
+      <span class="deco-item">🍬</span>
+      <span class="deco-item">🍇</span>
+      <span class="deco-item">🌰</span>
+    </div>
+
+    <div class="scene-fade"></div>
+
+    <a href="index.html" class="btn-back-home">◀ もどる</a>
+    <div class="shop-sign">🐹 ハム吉のおみせ</div>
+
+    <div class="score-badge" id="score-badge">
+      <span class="score-star">⭐</span>
+      <span id="score-val">0</span>かい せいかい！
+    </div>
+
+    <!-- Hamster + Bubble -->
+    <div class="hamster-conversation">
+      <div class="hamster-avatar" id="hamster-avatar">
+        <img src="hamster-shop.jpg" alt="ハム吉"
+             onerror="this.style.display='none'">
+        <!-- emoji fallback inside avatar -->
+        <span id="avatar-fallback" style="display:none">🐹</span>
+      </div>
+
+      <div class="speech-bubble" id="speech-bubble">
+        <div class="bubble-inner" id="bubble-inner">
+          <span class="bubble-line" id="bubble-text">...</span>
+        </div>
+        <div class="bubble-timer">
+          <div class="bubble-timer-fill" id="timer-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GAME CARD ===== -->
+  <div class="game-card">
+
+    <!-- PHASE 1: SELECT ITEM -->
+    <div id="phase-select" class="phase active">
+      <div class="phase-title">なにをかう？</div>
+      <div class="items-grid" id="items-grid"></div>
+    </div>
+
+    <!-- PHASE 2: PAYMENT -->
+    <div id="phase-pay" class="phase">
+      <!-- selected item -->
+      <div class="item-banner">
+        <span class="banner-emoji" id="pay-emoji">🍎</span>
+        <div class="banner-info">
+          <span class="banner-name" id="pay-name">りんご</span>
+          <div class="banner-price">
+            <span id="pay-price">50</span>
+            <span class="banner-yen">えん</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- coin tray -->
+      <div class="tray-label">いまいれたおかね</div>
+      <div class="coin-tray" id="coin-tray">
+        <span class="tray-placeholder" id="tray-placeholder">コインをえらんでね 🪙</span>
+      </div>
+
+      <!-- total -->
+      <div class="total-bar">
+        <span class="total-label-text">ごうけい</span>
+        <span>
+          <span class="total-number" id="total-num">0</span>
+          <span class="total-yen-unit">えん</span>
+        </span>
+      </div>
+
+      <!-- coin palette -->
+      <div class="palette-label">コイン・おさつをえらぼう</div>
+      <div class="coins-palette" id="coins-palette"></div>
+
+      <!-- actions -->
+      <div class="action-row">
+        <button class="btn-clear" id="btn-clear">クリア</button>
+        <button class="btn-pay" id="btn-pay">はらう！ 🪙</button>
+      </div>
+    </div>
+
+    <!-- PHASE 3: RESULT -->
+    <div id="phase-result" class="phase">
+      <div class="result-wrap" id="result-wrap"></div>
+    </div>
+
+  </div><!-- /game-card -->
+</div><!-- /app -->
+
+<div id="confetti-layer"></div>
+
+<!-- Reuse coin SVG data from existing app -->
+<script src="money.js"></script>
+<script>
+/* ============================================================
+   SHOP GAME — main script
+   ============================================================ */
+
+// ── SHOP ITEMS ──────────────────────────────────────────────
+const SHOP_ITEMS = [
+  { emoji:'🌰', name:'くるみ',      price:10,  msg:'ハム吉のだいすき！',   difficulty:'easy'   },
+  { emoji:'🍎', name:'りんご',      price:50,  msg:'あかくてあまい！',      difficulty:'easy'   },
+  { emoji:'🍊', name:'みかん',      price:50,  msg:'すっぱくておいしい！',  difficulty:'easy'   },
+  { emoji:'🌽', name:'とうもろこし', price:30,  msg:'あまくてジューシー！',  difficulty:'easy'   },
+  { emoji:'🍬', name:'おかし',      price:100, msg:'あまくておいしい！',     difficulty:'medium' },
+  { emoji:'🍇', name:'ぶどう',      price:100, msg:'むらさきがきれい！',     difficulty:'medium' },
+  { emoji:'🍰', name:'ケーキ',      price:150, msg:'とっておきの一品！',     difficulty:'medium' },
+  { emoji:'🧸', name:'くまさん',    price:500, msg:'かわいいね！',           difficulty:'hard'   },
+];
+
+// ── DIALOGUE TEMPLATES ──────────────────────────────────────
+function msg_greeting()       { return ['いらっしゃいませ！🎵', 'なにをかいますか？']; }
+function msg_item(item)       { return [`${item.name}ですね！`, `${item.price}えんです！`, 'おかねをはらってね🪙']; }
+function msg_waiting()        { return ['まってるよ〜🎵']; }
+function msg_hint1(price)     { return [`${price}えんだよ！`, 'コインをならべてみてね！']; }
+function msg_hint2(coins)     { return [`ヒント：${coins}をつかってみよう！`]; }
+function msg_hint3()          { return ['ひかってるコインをつかおう！✨']; }
+function msg_tooless(d)       { return [`あと${d}えんたりないよ！`, 'もうちょっとね〜！']; }
+function msg_exact(item)      { return ['ぴったり〜！🎉', `${item.name}ありがとう！`, 'またきてね！']; }
+function msg_change(c)        { return [`${c}えんおつりだよ！`, 'ありがとう！🎉']; }
+function msg_clear()          { return ['クリアしたよ！', 'もういちどえらんでね！']; }
+function msg_nocoins()        { return ['おかねをいれてね！🪙']; }
+
+// ── STATE ───────────────────────────────────────────────────
+const state = {
+  phase:       'select',
+  item:        null,
+  coins:       [],     // array of MONEY_DATA values added
+  total:       0,
+  score:       0,
+  timer:       null,
+  elapsed:     0,
+  hintLevel:   0,
+  msgQueue:    [],
+  msgTimer:    null,
+};
+const HINT_T = [8, 16, 24];
+const MAX_T  = 32;
+
+// ── DOM HELPERS ─────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+const phases = { select: $('phase-select'), pay: $('phase-pay'), result: $('phase-result') };
+
+// ── BOOT ────────────────────────────────────────────────────
+(function init() {
+  renderItems();
+  renderPalette();
+  $('btn-pay').addEventListener('click', handlePay);
+  $('btn-clear').addEventListener('click', handleClear);
+  setPhase('select');
+
+  // Fix avatar fallback (if image fails to load)
+  const avatarImg = document.querySelector('.hamster-avatar img');
+  if (avatarImg) {
+    avatarImg.addEventListener('error', () => {
+      avatarImg.style.display = 'none';
+      $('avatar-fallback').style.display = 'block';
+    });
+  }
+
+  setTimeout(() => say(msg_greeting()), 300);
+})();
+
+// ── PHASE ───────────────────────────────────────────────────
+function setPhase(name) {
+  state.phase = name;
+  Object.values(phases).forEach(el => el.classList.remove('active'));
+  phases[name].classList.add('active');
+}
+
+// ── ITEMS ───────────────────────────────────────────────────
+function renderItems() {
+  const grid = $('items-grid');
+  grid.innerHTML = '';
+  SHOP_ITEMS.forEach((item, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'item-card';
+    btn.style.animationDelay = `${i * 0.07}s`;
+    btn.innerHTML = `
+      <span class="item-emoji">${item.emoji}</span>
+      <span class="item-name">${item.name}</span>
+      <span class="item-price-tag">${item.price}えん</span>
+    `;
+    btn.addEventListener('click', () => pickItem(item));
+    grid.appendChild(btn);
+  });
+}
+
+function pickItem(item) {
+  state.item = item;
+  resetPayment();
+
+  // Update banner
+  $('pay-emoji').textContent  = item.emoji;
+  $('pay-name').textContent   = item.name;
+  $('pay-price').textContent  = item.price;
+
+  setTimeout(() => {
+    setPhase('pay');
+    say(msg_item(item));
+    startTimer();
+  }, 180);
+}
+
+// ── PALETTE ─────────────────────────────────────────────────
+function renderPalette() {
+  const palette = $('coins-palette');
+  palette.innerHTML = '';
+
+  MONEY_DATA.forEach(m => {
+    const btn = document.createElement('button');
+
+    if (m.type === 'coin') {
+      btn.className = 'palette-coin';
+      btn.id = `pal-${m.value}`;
+      // Scale SVG down for palette
+      const svgScaled = m.svg.replace(
+        /viewBox="0 0 100 100"/,
+        `viewBox="0 0 100 100" width="56" height="56"`
+      );
+      btn.innerHTML = `
+        <span class="coin-svg-wrap">${svgScaled}</span>
+        <span class="palette-coin-label">${m.label}</span>
+      `;
+    } else {
+      btn.className = 'palette-bill';
+      btn.id = `pal-${m.value}`;
+      // Scale bill SVG
+      const svgScaled = m.svg.replace(
+        /viewBox="0 0 200 100"/,
+        `viewBox="0 0 200 100" width="88" height="44"`
+      );
+      btn.innerHTML = `
+        <span class="bill-svg-wrap">${svgScaled}</span>
+        <span class="palette-bill-label">${m.label}</span>
+      `;
+    }
+
+    btn.addEventListener('click', () => addCoin(m));
+    palette.appendChild(btn);
+  });
+}
+
+// ── PAYMENT LOGIC ───────────────────────────────────────────
+function addCoin(money) {
+  state.coins.push(money.value);
+  state.total += money.value;
+  renderTray();
+  updateTotal();
+  // Progress resets hint level if under price
+  if (state.total <= state.item.price) state.hintLevel = 0;
+  resetTimer();
+  startTimer();
+}
+
+function removeCoin(value) {
+  const idx = state.coins.lastIndexOf(value);
+  if (idx === -1) return;
+  state.coins.splice(idx, 1);
+  state.total -= value;
+  renderTray();
+  updateTotal();
+}
+
+function renderTray() {
+  const tray = $('coin-tray');
+  const placeholder = $('tray-placeholder');
+
+  if (state.coins.length === 0) {
+    tray.classList.remove('has-coins');
+    placeholder.style.display = '';
+    // remove all chips
+    tray.querySelectorAll('.coin-chip').forEach(c => c.remove());
+    return;
+  }
+
+  tray.classList.add('has-coins');
+  placeholder.style.display = 'none';
+
+  // Rebuild chips
+  tray.querySelectorAll('.coin-chip').forEach(c => c.remove());
+
+  // Group by value, descending
+  const groups = {};
+  state.coins.forEach(v => groups[v] = (groups[v]||0)+1);
+  Object.entries(groups)
+    .sort((a,b) => b[0]-a[0])
+    .forEach(([val, cnt]) => {
+      const m = MONEY_DATA.find(x => x.value === +val);
+      for (let i = 0; i < cnt; i++) {
+        const chip = document.createElement('div');
+        chip.className = 'coin-chip' + (m.type==='bill' ? ' is-bill' : '');
+        chip.innerHTML = `
+          <span class="chip-dot" style="background:${m.color};"></span>
+          ${+val}えん
+        `;
+        chip.title = 'タップでとりのぞく';
+        chip.addEventListener('click', () => removeCoin(+val));
+        tray.appendChild(chip);
+      }
+    });
+}
+
+function updateTotal() {
+  const el = $('total-num');
+  const price = state.item ? state.item.price : 0;
+  el.textContent = state.total;
+  el.classList.remove('exact', 'over', 'pop');
+  void el.offsetWidth; // force reflow
+  el.classList.add('pop');
+  if (state.total === price) el.classList.add('exact');
+  else if (state.total > price) el.classList.add('over');
+}
+
+function resetPayment() {
+  state.coins  = [];
+  state.total  = 0;
+  state.hintLevel = 0;
+  renderTray();
+  const el = $('total-num');
+  el.textContent = '0';
+  el.className = 'total-number';
+  clearHintGlow();
+}
+
+// ── PAY / CLEAR ─────────────────────────────────────────────
+function handlePay() {
+  if (state.total === 0) { say(msg_nocoins()); return; }
+
+  const diff = state.item.price - state.total;
+  if (diff > 0) {
+    // too little
+    say(msg_tooless(diff));
+    shakeTray();
+    resetTimer(); startTimer();
+    return;
+  }
+
+  // SUCCESS
+  stopTimer();
+  state.score++;
+  $('score-val').textContent = state.score;
+
+  const change = state.total - state.item.price;
+  if (change === 0) {
+    say(msg_exact(state.item));
+    showResult(true, 0);
+  } else {
+    say(msg_change(change));
+    showResult(true, change);
+  }
+}
+
+function handleClear() {
+  resetPayment();
+  say(msg_clear());
+  resetTimer(); startTimer();
+}
+
+function shakeTray() {
+  const tray = $('coin-tray');
+  tray.classList.remove('shake');
+  void tray.offsetWidth;
+  tray.classList.add('shake');
+  setTimeout(() => tray.classList.remove('shake'), 450);
+}
+
+// ── RESULT ──────────────────────────────────────────────────
+function showResult(ok, change) {
+  const item = state.item;
+
+  let html = '';
+  if (ok && change === 0) {
+    html = `
+      <span class="result-big-emoji">🎉</span>
+      <div class="result-title">ぴったり！</div>
+      <div class="perfect-badge">⭐ かんぺき！ ⭐</div>
+      <div class="result-sub">${item.emoji} ${item.name}をかうことが<br>できたよ！</div>
+      <button class="btn-next" onclick="nextRound()">つぎのおかいもの →</button>
+    `;
+    launchConfetti();
+  } else if (ok && change > 0) {
+    html = `
+      <span class="result-big-emoji">💰</span>
+      <div class="result-title">かいもの できたよ！</div>
+      <div class="result-sub">${item.emoji} ${item.name}をかったよ！</div>
+      <div class="change-box">
+        <div class="change-box-label">ハム吉からのおつり</div>
+        <div class="change-box-amount">
+          ${change}<span class="change-box-yen">えん</span>
+        </div>
+      </div>
+      <button class="btn-next" onclick="nextRound()">つぎのおかいもの →</button>
+    `;
+  }
+
+  $('result-wrap').innerHTML = html;
+  setTimeout(() => setPhase('result'), 280);
+}
+
+function nextRound() {
+  resetPayment();
+  stopTimer();
+  state.hintLevel = 0;
+  setPhase('select');
+  say(msg_greeting());
+}
+
+// ── SPEECH / MESSAGE QUEUE ───────────────────────────────────
+function say(lines) {
+  if (typeof lines === 'string') lines = [lines];
+  clearMsgQueue();
+  state.msgQueue = [...lines];
+  showNextLine();
+}
+
+function showNextLine() {
+  if (!state.msgQueue.length) return;
+  const line = state.msgQueue.shift();
+  const textEl = $('bubble-text');
+  const bubble  = $('speech-bubble');
+
+  // re-trigger animation
+  textEl.style.animation = 'none';
+  void textEl.offsetWidth;
+  textEl.style.animation = '';
+  textEl.textContent = line;
+
+  // Bounce the bubble
+  bubble.style.transform = 'scale(0.92)';
+  setTimeout(() => { bubble.style.transform = ''; bubble.style.transition = 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1)'; }, 0);
+  setTimeout(() => { bubble.style.transition = ''; }, 350);
+
+  if (state.msgQueue.length > 0) {
+    state.msgTimer = setTimeout(showNextLine, 1900);
+  }
+}
+
+function clearMsgQueue() {
+  if (state.msgTimer) { clearTimeout(state.msgTimer); state.msgTimer = null; }
+  state.msgQueue = [];
+}
+
+// ── TIMER & HINTS ───────────────────────────────────────────
+function startTimer() {
+  state.elapsed = 0;
+  state.timer = setInterval(tick, 1000);
+  updateTimerBar();
+}
+
+function stopTimer() {
+  clearInterval(state.timer);
+  state.timer = null;
+  $('timer-fill').style.width = '0%';
+  clearHintGlow();
+}
+
+function resetTimer() {
+  stopTimer();
+}
+
+function tick() {
+  state.elapsed++;
+  updateTimerBar();
+  fireHints();
+  if (state.elapsed >= MAX_T) stopTimer();
+}
+
+function updateTimerBar() {
+  const fill = $('timer-fill');
+  const pct  = Math.min(100, (state.elapsed / MAX_T) * 100);
+  fill.style.width = pct + '%';
+
+  const bubble = $('speech-bubble');
+  bubble.classList.remove('hint-yellow','hint-orange');
+  fill.className = 'bubble-timer-fill';
+
+  if (state.elapsed >= HINT_T[1]) {
+    fill.classList.add('urgent');
+    bubble.classList.add('hint-orange');
+  } else if (state.elapsed >= HINT_T[0]) {
+    fill.classList.add('warn');
+    bubble.classList.add('hint-yellow');
+  }
+}
+
+function fireHints() {
+  if (state.phase !== 'pay' || !state.item) return;
+  const t = state.elapsed;
+
+  if (t === HINT_T[0] && state.hintLevel < 1) {
+    state.hintLevel = 1;
+    say(msg_hint1(state.item.price));
+  }
+  if (t === HINT_T[1] && state.hintLevel < 2) {
+    state.hintLevel = 2;
+    const remaining = state.item.price - state.total;
+    const suggestion = greedyCoins(remaining > 0 ? remaining : state.item.price);
+    say(msg_hint2(suggestion));
+  }
+  if (t === HINT_T[2] && state.hintLevel < 3) {
+    state.hintLevel = 3;
+    say(msg_hint3());
+    glowHintCoins(state.item.price - state.total);
+  }
+}
+
+function greedyCoins(amount) {
+  if (amount <= 0) amount = state.item.price;
+  const denoms = [10000,5000,1000,500,100,50,10,5,1];
+  const used = {};
+  let rem = amount;
+  for (const d of denoms) {
+    const n = Math.floor(rem / d);
+    if (n > 0) { used[d] = n; rem -= n * d; }
+  }
+  return Object.entries(used)
+    .map(([v,n]) => n>1 ? `${v}えん×${n}` : `${v}えん`)
+    .join('・');
+}
+
+function glowHintCoins(remaining) {
+  clearHintGlow();
+  if (remaining <= 0) remaining = state.item.price;
+  const denoms = [10000,5000,1000,500,100,50,10,5,1];
+  let rem = remaining;
+  const needed = new Set();
+  for (const d of denoms) {
+    if (rem >= d) { needed.add(d); rem = rem % d; }
+  }
+  needed.forEach(v => {
+    const btn = document.getElementById(`pal-${v}`);
+    if (btn) btn.classList.add('hint-glow');
+  });
+}
+
+function clearHintGlow() {
+  document.querySelectorAll('.hint-glow').forEach(el => el.classList.remove('hint-glow'));
+}
+
+// ── CONFETTI ────────────────────────────────────────────────
+function launchConfetti() {
+  const layer = $('confetti-layer');
+  const colors = ['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#FF9F45','#C77DFF','#FF85A1'];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'cf';
+      const size = 6 + Math.random() * 10;
+      el.style.cssText = `
+        left: ${Math.random()*100}%;
+        width: ${size}px;
+        height: ${size}px;
+        background: ${colors[Math.floor(Math.random()*colors.length)]};
+        border-radius: ${Math.random()>0.5?'50%':'3px'};
+        animation-duration: ${1.5+Math.random()*2.5}s;
+        animation-delay: 0s;
+      `;
+      layer.appendChild(el);
+      setTimeout(() => el.remove(), 5000);
+    }, i * 35);
+  }
+}
+</script>
+</body>
+</html>
